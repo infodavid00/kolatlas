@@ -5,6 +5,10 @@ import { Send } from 'react-feather'
 import { TailSpin } from 'react-loader-spinner'
 import { useParams } from 'react-router-dom'
 import { baseEndpoint } from '../var.jsx'
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
+dayjs.extend(relativeTime);
 
 export default function Overview() {
   const [user, setUser] = useState(false)
@@ -34,6 +38,33 @@ export default function Overview() {
       }
      fetchData()
   }, [])
+
+  const [commentInput, setCommentInput] = useState('')
+  const [isCommenting, setIsCommenting] = useState(false)
+  const handleCommentUpload = async (id) => {
+  	 setIsCommenting(true)
+  	 try {
+  	    const date = new Date()
+        const response = await fetch(`${baseEndpoint}/records/writeComment?id=${id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Srt': 'main',
+          },
+          body: JSON.stringify({
+          	 text: commentInput,
+          	 date
+          })
+        });	
+        if (response.status === 200) {
+        	window.location.reload()
+        } else throw { message: null}
+  	 } catch(e) {
+  	   console.log(e.message)
+  	 } finally {
+   	   setIsCommenting(false)
+  	 }
+  }
   
   return (
     <>
@@ -121,18 +152,23 @@ export default function Overview() {
             </div>
   	    </div>
         <div id='overview-b'>
-           <div className='overview-header'>2.2k Comments</div>
+           <div className='overview-header'>{(user?.comments ?? []).length} Comments</div>
            <div id='ob-comment-s-cont'>
-             <textarea placeholder='New comment'></textarea>
-             <Send strokeWidth={1} style={{ cursor: 'pointer'}} />
+             <textarea placeholder='New comment' value={commentInput} onChange={e => setCommentInput(e.target.value)}></textarea>
+             {!isCommenting? <Send strokeWidth={1} style={{ cursor: 'pointer'}} onClick={async ()=> {
+             	if (commentInput) {
+             	  await handleCommentUpload(user._id)
+             	}
+             }} />
+             : <TailSpin width={20} height={20} color={'blue'} />}
            </div>
            <div id='ob-comment-body'>
-             {[1,2,3,4,5,6,7].map((element)=> (
+             {(user?.comments?.sort((a, b) => new Date(b.date) - new Date(a.date)) ?? []).map((element)=> (
              	<div className='ob-comment'>
-             	  <div className='ob-comment-logo'>S</div>
+             	  <div><div className='ob-comment-logo'>{((element.text ?? '').split('')[0])?.toUpperCase()}</div></div>
              	  <div>
-             	    <div className='ob-comment-txt'>Hi this app sucks like mad, cant even see my ass using it nomore</div>
-             	    <div className='ob-comment-time'>commented 10-2-2024</div>
+             	    <div className='ob-comment-txt'>{element.text}</div>
+             	    <div className='ob-comment-time'>commented {dayjs(element.date).fromNow()}</div>
              	  </div>
              	</div>
              ))}

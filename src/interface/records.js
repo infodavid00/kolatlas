@@ -1,6 +1,6 @@
 
 import verify from "../kernel/verify.js";
-import { write, read, vote, readOne } from "../kernel/records.js";
+import { write, read, vote, readOne, writeComment } from "../kernel/records.js";
 
 const records = {
   "/write": {
@@ -14,6 +14,10 @@ const records = {
   "/readOne": {
   	 method: "GET",
   	 workers: [readOne]
+  },
+  "/writeComment": {
+  	 method: "POST",
+  	 workers: [writeComment]
   },
   "/vote":  {
   	 method: "PUT",

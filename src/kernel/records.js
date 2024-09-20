@@ -23,10 +23,12 @@ export async function read(request, response) {
         projection.chains = 1;
         projection.currentCalls = 1;
         projection.votes = 1;
+        projection.image = 1;
+
     }
     const data = await db().target("records").find({}, {
-    	projection
-    }).skip(page).limit(size).sort().toArray();
+         projection 
+    }).skip(page).limit(size).sort({ date: -1 }).toArray();
   	response.send(200, "application/json", { ack: true, data });
   } catch(error) {
   	response.send(500, "application/json", { ack: false, message: error.message});
@@ -40,6 +42,17 @@ export async function readOne(request, response) {
        response.send(200, "application/json", { ack: true, data });
     else 
        response.send(404, "application/json", { ack: false });
+  } catch(error) {
+  	response.send(500, "application/json", { ack: false, message: error.message});
+  }	
+}
+
+export async function writeComment(request, response) {
+  try {
+    const data = await db().target("records").updateOne({ _id: new ObjectId(request.queryStrings?.id) }, {
+    	 $push: { comments: request.body }
+    });
+    response.send(200, "application/json", { ack: true });
   } catch(error) {
   	response.send(500, "application/json", { ack: false, message: error.message});
   }	

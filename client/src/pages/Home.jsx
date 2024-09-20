@@ -42,36 +42,63 @@ export default function Home() {
     }
   };
 
-  const handleSubmit = async () => {
-    const { password, name, x, tg, chains, currentCalls } = inputs;
-    if (password && name && x && tg && chains && currentCalls) {
-      setIsSubmitting(true);
+const handleSubmit = async () => {
+  const { password, name, x, tg, chains, currentCalls, image } = inputs;
+  if (password && name && x && tg && chains && currentCalls) {
+    setIsSubmitting(true);
+
+    let imageUrl = '';
+    if (image) {
+      // Step 2: Upload image to Cloudinary
+      const formData = new FormData();
+      formData.append('file', image);
+      formData.append('upload_preset', 'th47zcei'); // Replace with your upload preset
+
       try {
-        const response = await fetch(`${baseEndpoint}/records/write`, {
+        const uploadResponse = await fetch('https://api.cloudinary.com/v1_1/dxkzodjlu/image/upload', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Srt': 'main',
-            'X-application-password': password
-          },
-          body: JSON.stringify(inputs)
+          body: formData
         });
-        if (response.ok) {
-          setShowUploader(false);
-          setRecords([]); // Clear records on new submission
-          setCurrentPage(0); // Reset to the first page after submission
-          setHasMoreRecords(true); // Reset the hasMoreRecords flag
-          fetchRecords(0); // Fetch records again
+
+        if (uploadResponse.ok) {
+          const uploadData = await uploadResponse.json();
+          imageUrl = uploadData.secure_url; // Get the URL of the uploaded image
         } else {
-          throw new Error('Submission failed');
+          throw new Error('Image upload failed');
         }
       } catch (error) {
         console.error(error);
-      } finally {
         setIsSubmitting(false);
+        return; // Exit if image upload fails
       }
     }
-  };
+
+    // Step 3: Submit form data including image URL
+    try {
+      const response = await fetch(`${baseEndpoint}/records/write`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Srt': 'main',
+          'X-application-password': password
+        },
+        body: JSON.stringify({ ...inputs, image: imageUrl, date: new Date() }) // Include the image URL
+      });
+
+      if (response.ok) {
+        setShowUploader(false);
+        window.location.reload();
+      } else {
+        throw new Error('Submission failed');
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+};
+
 
   const isSubmitDisabled = Object.values(inputs).some(input => input === '' || input === null) || isSubmitting;
 
@@ -187,7 +214,7 @@ export default function Home() {
                         <ArrowDown width={20} fill={'rgba(105, 105, 105, 0.7)'} style={{ marginTop: '-0.2em' }} onClick={async ()=> await Vote(list._id, -1)} />
                       </div>
                     </td>
-                    <td className='home-table-data'><img className='home-table-data-profile' src={list?.photo} /></td>
+                    <td className='home-table-data'><img className='home-table-data-profile' src={list?.image} /></td>
                     <td className='home-table-data'>{list?.name}</td>
                     <td className='home-table-data'><a href={list?.x}>{list?.x}</a></td>
                     <td className='home-table-data'><a href={list?.tg}>{list?.tg}</a></td>
