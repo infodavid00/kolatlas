@@ -1,0 +1,11 @@
+
+application.name = kolatlas
+application.version = 1.0.0
+application.releaseTag = dev
+
+view.usesCacheBusting = true
+view.rewriteToEntry = true
+
+new.namespaceSrt = X-Srt
+
+admin.psw = foobar

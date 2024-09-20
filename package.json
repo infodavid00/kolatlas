@@ -1,0 +1,19 @@
+{
+  "name": "kolatlas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node .",
+    "dev": "nodemon .",
+    "build-client": "chmod +x scripts/build-client.sh && scripts/build-client.sh"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mongodb": "^6.9.0",
+    "su-chronos": "^1.0.2"
+  }
+}
