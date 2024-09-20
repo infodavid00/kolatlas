@@ -76,7 +76,7 @@ export default function Home() {
   const isSubmitDisabled = Object.values(inputs).some(input => input === '' || input === null) || isSubmitting;
 
   useEffect(() => {
-   async  function fetchRecords() {
+   async function fetchRecords() {
        try {
           const response = await fetch(`${baseEndpoint}/records/read?limited=1&page=0&size=30`, {
               method: 'GET',
@@ -100,6 +100,34 @@ export default function Home() {
     fetchRecords()
   }, []); 
 
+   const [pageNo, setPageNo] = useState(1)
+   const [lockGet, shouldLockGet] = useState(false)
+   async function fetchRecords() {
+       try {
+          shouldLockGet(true)
+          const response = await fetch(`${baseEndpoint}/records/read?limited=1&page=${pageNo}&size=30`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-Srt': 'main'
+              }
+          });
+         if (response.ok) {
+            const data = await response.json();
+            if (data.data && data.data.length > 0) {
+              setRecords([...records, ...data.data]);
+              setPageNo(pageNo + 1)
+              shouldLockGet(false)
+            }
+         } else {
+            throw new Error('Fetching records failed');
+         }
+       } catch (error) {
+          console.error(error);
+       } 
+    }
+
+
   return (
     <>
       {!Array.isArray(records) ? (
@@ -120,31 +148,35 @@ export default function Home() {
                   <th>TG</th>
                   <th>Chains</th>
                   <th>Current Calls</th>
+                  <th>More</th>
                 </tr>
               </thead>
               <tbody>
                 {records.map((list, index) => (
-                  <tr key={list.id} className='home-table-databody'>
-                    <td className='home-table-data' key={index}>{index + 1}</td>
+                  <tr key={index} className='home-table-databody'>
+                    <td className='home-table-data'>{index + 1}</td>
                     <td className='home-table-data'>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 0, alignItems: 'center', width: '2.3em' }}>
-                        <ArrowUp width={20} fill={'rgba(105, 105, 105, 0.7)'} />
+                        <ArrowUp width={20} fill={'rgba(105, 105, 105, 0.7)'} onClick={()=> console.log('hi')} />
                         <div style={{ fontFamily: 'poppins', fontSize: 14, color: String(list?.votes).startsWith('-') ? 'tomato' : 'rgba(105, 105, 105, 0.7)' }}>{list?.votes}</div>
                         <ArrowDown width={20} fill={'rgba(105, 105, 105, 0.7)'} style={{ marginTop: '-0.2em' }} />
                       </div>
                     </td>
-                    <td className='home-table-data'><img className='home-table-data-profile' src={list?.photo} alt="Profile" /></td>
+                    <td className='home-table-data'><img className='home-table-data-profile' src={list?.photo} /></td>
                     <td className='home-table-data'>{list?.name}</td>
                     <td className='home-table-data'><a href={list?.x}>{list?.x}</a></td>
                     <td className='home-table-data'><a href={list?.tg}>{list?.tg}</a></td>
                     <td className='home-table-data'>{list?.chains}</td>
                     <td className='home-table-data'><a href={list?.currentcalls}>{list?.currentcalls}</a></td>
+                    <td className='home-table-data' onClick={()=> window.location.href = '/overview/'+ list._id}>See more</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <button id='home-loadmore'>Load more</button>
+          <button id='home-loadmore' disabled={lockGet} onClick={async ()=> {
+             if (!lockGet) await fetchRecords()
+          }}>Load more</button>
         </div>
       )}
 
