@@ -104,7 +104,7 @@ body::-webkit-scrollbar-thumb {
 #home-table thead {
   background-color: #f1f1f1;
   font-family: 'poppins', sans-serif;
-  font-size: 15px;
+  font-size: 14.05px;
   color: rgba(5, 5, 5, 0.75);
   user-select: none;
   -ms-user-select: none;
@@ -212,6 +212,100 @@ body::-webkit-scrollbar-thumb {
 }
 
 
+#overview-b {
+  width: 100%;
+  margin-top: 2em;
+}
+.overview-header {
+  font-family: poppins;
+  margin-bottom: 13px;
+}
+
+#ob-comment-s-cont {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.6em;  
+}
+#ob-comment-s-cont textarea {
+  resize: none;
+  height: 50px; 
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-family: regular;
+  transition: 0.1s;
+  padding: 10px; 
+  outline: none;
+}
+#ob-comment-s-cont textarea:hover {
+  border: 1px solid dodgerblue;
+}
+#ob-comment-s-cont textarea::-webkit-scrollbar {
+  display: none;
+}
+#ob-comment-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;	
+  margin-top: 1em;
+}
+.ob-comment {
+  display: flex;
+  gap: 0.8em;
+  align-items: center;
+  border-bottom: 0.3px solid #eee;
+  padding-bottom: 0.8em;
+}
+.ob-comment-logo {
+  width: 30px;
+  height: 30px;
+  background-color: #eee;
+  border-radius: 50px;	
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: poppins;
+}
+.ob-comment-txt {
+  font-size: 14.5px;
+}
+.ob-comment-time {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+#oa-metadata {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+#oa-metadata-profile {
+  width: 120px;
+  height: 120px;
+  background-color: #eee;
+  border-radius: 10px;
+}
+.oa-metadata-text {
+  font-size: 14px;
+  display: block;
+}
+
+
+#table-patcher {
+  overflow: auto;
+  margin-bottom: 2em;	
+}
+#table-patcher::-webkit-scrollbar {
+  height: 0.6em;
+}
+#table-patcher::-webkit-scrollbar-thumb {
+  background-color: #eee;
+}
+
+
+
 @media (max-width: 500px) {
 #home-upload-cont {
   width: 90%;
@@ -222,4 +316,31 @@ body::-webkit-scrollbar-thumb {
 #wrapper {
   padding: 0 1em;
 }	
+#overview {
+  flex-direction: column;
+}
+#overview-a {
+  width: 100%;
+}
+#overview-b {
+  width: 100%;
+}
+.home-table-data {
+  font-size: 0.7em;
+}
+#home-table thead {
+  font-size: 13px;
+}
+#overview-b {
+  width: 100%;
+}
+}
+
+
+@media (min-width: 500px) {
+#overview {
+  width: 75%;
+  margin-top: 2em;
+  margin: auto;
+}
 }
