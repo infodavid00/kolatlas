@@ -128,6 +128,31 @@ export default function Home() {
     }
 
 
+   async function Vote(id, count) {
+       try {
+          const response = await fetch(`${baseEndpoint}/records/vote?id=${id}&count=${count}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-Srt': 'main'
+              }
+          });
+         if (response.ok) {
+           setRecords(records.map(e => {
+              const n = {...e}
+              if (n._id === id) n.votes = n.votes + count
+           	  return n;
+           }))
+         } else {
+            throw new Error('Fetching records failed');
+         }
+       } catch (error) {
+          console.error(error);
+       } 
+    }
+
+
+
   return (
     <>
       {!Array.isArray(records) ? (
@@ -157,9 +182,9 @@ export default function Home() {
                     <td className='home-table-data'>{index + 1}</td>
                     <td className='home-table-data'>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 0, alignItems: 'center', width: '2.3em' }}>
-                        <ArrowUp width={20} fill={'rgba(105, 105, 105, 0.7)'} onClick={()=> console.log('hi')} />
+                        <ArrowUp width={20} fill={'rgba(105, 105, 105, 0.7)'} onClick={async ()=> await Vote(list._id, 1)} />
                         <div style={{ fontFamily: 'poppins', fontSize: 14, color: String(list?.votes).startsWith('-') ? 'tomato' : 'rgba(105, 105, 105, 0.7)' }}>{list?.votes}</div>
-                        <ArrowDown width={20} fill={'rgba(105, 105, 105, 0.7)'} style={{ marginTop: '-0.2em' }} />
+                        <ArrowDown width={20} fill={'rgba(105, 105, 105, 0.7)'} style={{ marginTop: '-0.2em' }} onClick={async ()=> await Vote(list._id, -1)} />
                       </div>
                     </td>
                     <td className='home-table-data'><img className='home-table-data-profile' src={list?.photo} /></td>
