@@ -33,7 +33,17 @@ export async function read(request, response) {
   }	
 }
 
-
+export async function readOne(request, response) {
+  try {
+    const data = await db().target("records").findOne({ _id: new ObjectId(request.queryStrings?.id) });
+    if (data)
+       response.send(200, "application/json", { ack: true, data });
+    else 
+       response.send(404, "application/json", { ack: false });
+  } catch(error) {
+  	response.send(500, "application/json", { ack: false, message: error.message});
+  }	
+}
 
 export async function vote(request, response) {
   try {

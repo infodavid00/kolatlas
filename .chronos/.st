@@ -1,37 +1,37 @@
 {
    "assets/Poppins-ExtraBold-W_qeO1XX.ttf": {
-      "etag": "LmVxYTFmcFcwZHQ0MjhzdFg0NG8xMjMxc2VsNS9zYW5QN3NyMHBFdEIuLVhfLXRvMjY4MHhpTw",
-      "lm": 1726854413844.3728,
+      "etag": "cmExNE90dGF0czQyc3RvMlg0c2RmbDhpLXEzNWVCOHAvNzFwLjMtNDdXX3MuWFBFbzZleG4xOA",
+      "lm": 1726861616161.178,
       "compressedPath": ".chronos/static/assets/Poppins-ExtraBold-W_qeO1XX.ttf"
    },
    "assets/Poppins-Regular-CTKNfV9P.ttf": {
-      "etag": "aTU2OGw3cGY0OHRzc1JQMDFQcGFUMENlZzMuNHR0c3NyTi0udW4wZjJvOWEtL2VLVjEyMjQ",
-      "lm": 1726854413844.3728,
+      "etag": "UDZzNDE5ODQydTE3Z1ZhNDdzVGkydHA1OC1sZnBmQ24tZVAudG8zNDNhS04ucnNzZS9SOHQ",
+      "lm": 1726861616161.178,
       "compressedPath": ".chronos/static/assets/Poppins-Regular-CTKNfV9P.ttf"
    },
    "assets/Poppins-SemiBold-B_fPDAUb.ttf": {
-      "etag": "N0RBcDhsMG44aVU2LTFvczBzMm0uZDVTLkI0ZnN0XzA0LzIxaVBQZUIycHNiLTNldG9mNHRh",
-      "lm": 1726854413844.3728,
+      "etag": "ODJzNGZvLURpNHNlMjgxLjhwMVVQZTQ3QW0uUzVzL3RmQm90bGI2czR0blAtM2lhQmQ3XzNw",
+      "lm": 1726861616161.178,
       "compressedPath": ".chronos/static/assets/Poppins-SemiBold-B_fPDAUb.ttf"
    },
    "index.html": {
-      "etag": "MjE3NWgueDgwbmwwNHQwNDQ4MTNtMjJlLmlkNg",
-      "lm": 1726854413844.3728,
+      "etag": "NjQxZG4uMjIuMWhtbDgzNzg0aXg0dDQ3MzVlOA",
+      "lm": 1726861616161.178,
       "compressedPath": ".chronos/static/index.html"
    },
    "vite.svg": {
-      "etag": "NnZnNTBpdDU5MTIzLjcyc3YyMTRlMC4wODI",
-      "lm": 1726854413520.382,
+      "etag": "NnR2NTgzMzUwNzIxLi4yOHZpNGU0Z3MyMQ",
+      "lm": 1726861615881.169,
       "compressedPath": ".chronos/static/vite.svg"
    },
-   "assets/index-DBmDUIfw.css": {
-      "etag": "ZDU3LTJzSXNtMFU2OGUyaWYuc2Ewc0I0ZTEwNDR4MzgvRHdjMnQxLnNEbg",
-      "lm": 1726854413844.3728,
-      "compressedPath": ".chronos/static/assets/index-DBmDUIfw.css"
+   "assets/index-B790CJtY.js": {
+      "etag": "dGRlaUpmdGpkQi9ZLXhhZWl1bnNDN2VkZXMubm4wc3M5",
+      "lm": 1726861616161.178,
+      "compressedPath": ".chronos/static/assets/index-B790CJtY.js"
    },
-   "assets/index-D7ZXx26c.js": {
-      "etag": "ZWQ3WC1zaW5zZS5lNmljZmRaeHhEbm5kL3NzMnVhZWp0",
-      "lm": 1726854413844.3728,
-      "compressedPath": ".chronos/static/assets/index-D7ZXx26c.js"
+   "assets/index-NiB-MYvO.css": {
+      "etag": "aWNzZG5lc2ktZm5lQmQvc05uZWUtc2lNc3RkdXZ4YU8uWQ",
+      "lm": 1726861616161.178,
+      "compressedPath": ".chronos/static/assets/index-NiB-MYvO.css"
    }
 }

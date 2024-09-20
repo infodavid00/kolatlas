@@ -1,20 +1,54 @@
 
+import { useState, useEffect } from 'react'
 import '../index.css'
 import { Send } from 'react-feather'
+import { TailSpin } from 'react-loader-spinner'
+import { useParams } from 'react-router-dom'
+import { baseEndpoint } from '../var.jsx'
 
 export default function Overview() {
+  const [user, setUser] = useState(false)
+  const { id } = useParams()
+  
+  useEffect(()=> {
+     async function fetchData() {
+  	   try {
+        const response = await fetch(`${baseEndpoint}/records/readOne?id=${id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Srt': 'main',
+          },
+        });
+        if (response.status === 200) {
+          const data = await response.json()
+          setUser(data.data)
+        } else if (response.status === 404) {
+          setUser('n')
+        } else {
+          throw new Error('Submission failed');
+        }
+       } catch (error) {
+        console.error(error);
+       } 
+      }
+     fetchData()
+  }, [])
+  
   return (
+    <>
+    {typeof user === 'object' && user?._id ? (
   	 <div id='overview'> 
   	    <div id='overview-a'>
   	       <div className='overview-header'>Metadata</div>
   	       <div id='oa-metadata'>  
-  	         <image id='oa-metadata-profile'/>
+  	         <img id='oa-metadata-profile' src={user.image} />
   	         <div>  
-  	            <div className='oa-metadata-text' style={{ fontFamily: 'poppins' }}>Jensen Hueng</div>
-  	            <a className='oa-metadata-text' style={{ color: 'dodgerblue', textDecoration: 'none' }} href=''>https://x.com/jenh2023</a>
-  	            <a className='oa-metadata-text' style={{ color: 'dodgerblue', textDecoration: 'none' }} href=''>https://telegram.com/e0j20</a>
-  	            <div className='oa-metadata-text'>I don't know what to write here</div>
-  	            <div className='oa-metadata-text' style={{ fontFamily: 'poppins' }}>-2 Votes</div>
+  	            <div className='oa-metadata-text' style={{ fontFamily: 'poppins' }}>{user.name}</div>
+  	            <a className='oa-metadata-text' style={{ color: 'dodgerblue', textDecoration: 'none' }} href={user.x}>{user.x}</a>
+  	            <a className='oa-metadata-text' style={{ color: 'dodgerblue', textDecoration: 'none' }} href={user.tg}>{user.tg}</a>
+  	            <div className='oa-metadata-text'>{user.chains}</div>
+  	            <div className='oa-metadata-text' style={{ fontFamily: 'poppins' }}>{user.votes} Votes</div>
   	         </div>
   	       </div>
            <br />
@@ -105,5 +139,15 @@ export default function Overview() {
            </div>
         </div>
   	 </div>
+  	 ) : user === 'n' ? (
+  	   <div style={{ display: 'flex', justifyContent: 'center', marginTop: '4em' }}>
+          the request resource does not exist
+  	   </div> 	 	
+  	 ) : (
+  	   <div style={{ display: 'flex', justifyContent: 'center', marginTop: '4em' }}>
+          <TailSpin width={20} height={20} color={'blue'} />
+  	   </div> 
+  	 )}
+   </>
   )
 }
