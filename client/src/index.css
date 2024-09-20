@@ -208,8 +208,8 @@ body::-webkit-scrollbar-thumb {
   float: right;
   background-color: dodgerblue;
   color: white;
+  margin-bottom: 1em;
 }
-
 
 
 @media (max-width: 500px) {

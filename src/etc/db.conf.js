@@ -27,7 +27,7 @@ class MONGODB {
   	return await this.client.close();
   }
 
-  static db1(uri) {
+  static db(uri) {
   	if (!MONGODB.instance) {
   	  MONGODB.instance = new MONGODB(uri);
   	}
@@ -35,6 +35,6 @@ class MONGODB {
   }
 }
 
-const db1 = (uri) => MONGODB.db1(uri);
+const db = (uri) => MONGODB.db(uri);
 
-export default db1;
+export default db;

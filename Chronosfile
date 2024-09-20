@@ -1,13 +1,16 @@
 
 DBKEY=mongodb+srv://wolfx:aCjU0zYngQrSYndQ@cluster0.qs0yh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+ADMINPASSWORD=foobar
 
 application.name = kolatlas
 application.version = 1.0.0
 application.releaseTag = dev
 
-view.usesCacheBusting = true
+view.cacheMaxMem = 1
+view.updateCacheAfter = 120
 view.rewriteToEntry = true
+view.usesCacheBusting = true
 
-new.namespaceSrt = X-Srt
+newNamespace.srt = X-Srt
 
 admin.psw = foobar
