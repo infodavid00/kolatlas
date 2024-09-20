@@ -20,7 +20,7 @@ export async function read(request, response) {
         projection.x = 1;
         projection.tg = 1;
         projection.chains = 1;
-        projection.currentcalls = 1;
+        projection.currentCalls = 1;
         projection.votes = 1;
     }
     const data = await db().target("records").find({}, {

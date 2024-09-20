@@ -167,7 +167,7 @@ export default function Home() {
                     <td className='home-table-data'><a href={list?.x}>{list?.x}</a></td>
                     <td className='home-table-data'><a href={list?.tg}>{list?.tg}</a></td>
                     <td className='home-table-data'>{list?.chains}</td>
-                    <td className='home-table-data'><a href={list?.currentcalls}>{list?.currentcalls}</a></td>
+                    <td className='home-table-data'><a href={list?.currentCalls}>{list?.currentCalls}</a></td>
                     <td className='home-table-data' onClick={()=> window.location.href = '/overview/'+ list._id}>See more</td>
                   </tr>
                 ))}
