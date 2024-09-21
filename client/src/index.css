@@ -153,11 +153,19 @@ body::-webkit-scrollbar-thumb {
   padding: 2em 1em;
   border-radius: 10px;
   width: 40%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center; 	
-  gap: 1em;
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  gap: 1em; 
+  overflow-y: auto;
+  position: fixed;
+  max-height: 90%;
+}
+#home-upload-cont::-webkit-scrollbar {
+  width: 0.7em;
+}
+#home-upload-cont::-webkit-scrollbar-thumb {
+  background-color: #eee;
 }
 .home-uploader-input {
   padding: 0.8em 0.7em;	
@@ -305,9 +313,32 @@ body::-webkit-scrollbar-thumb {
 }
 
 
+#overview-upload-pick-cont {	
+  width: 70%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.3em;
+}
+.overview-upload-pick {
+  padding: 8px;
+  background-color: #eee;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: regular;
+  font-size: 13.7px;
+  width: 100%;
+  text-align: center;
+}
+.overview-upload-pick-active {
+  background-color: dodgerblue;
+  color: white;
+  font-family: poppins;
+}
+
 
 @media (max-width: 500px) {
-#home-upload-cont {
+#home-upload-cont,#overview-upload-pick-cont {
   width: 90%;
 }
 .home-uploader-input,#home-uploader-footer {

@@ -58,6 +58,28 @@ export async function writeComment(request, response) {
   }	
 }
 
+export async function writeCurrentCalls(request, response) {
+  try {
+    const data = await db().target("records").updateOne({ _id: new ObjectId(request.queryStrings?.id) }, {
+    	 $push: { currentCallsList: request.body }
+    });
+    response.send(200, "application/json", { ack: true });
+  } catch(error) {
+  	response.send(500, "application/json", { ack: false, message: error.message});
+  }	
+}
+
+export async function writeHistory(request, response) {
+  try {
+    const data = await db().target("records").updateOne({ _id: new ObjectId(request.queryStrings?.id) }, {
+    	 $push: { history: request.body }
+    });
+    response.send(200, "application/json", { ack: true });
+  } catch(error) {
+  	response.send(500, "application/json", { ack: false, message: error.message});
+  }	
+}
+
 export async function vote(request, response) {
   try {
     await db().target("records").updateOne({ _id:  new ObjectId(request.queryStrings?.id) }, { $inc: { votes: Number(request.queryStrings?.count) ?? 1 } });

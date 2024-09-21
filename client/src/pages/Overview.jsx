@@ -65,6 +65,135 @@ export default function Overview() {
    	   setIsCommenting(false)
   	 }
   }
+
+  const handleKeyDown = (event) => {
+    if (event.ctrlKey && (event.key === 'x' || event.key === 'X')) {
+      setIsOnUploader(true);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+  
+  const [isOnUploader, setIsOnUploader] = useState(false)
+  const [isOnUCC, setIsOnUCC] = useState(true)
+
+  const [UCCInputs, setUCCInputs] = useState({
+  	 password: '',
+  	 token: '',
+  	 chain: '',
+  	 ca: '',
+  	 link: '',
+  	 doic: '',
+  	 pac: '',
+  	 cc: '',
+  	 date: new Date()
+  })
+  const setUUCInputs = (key, value) => {
+  	const N = {...UCCInputs}
+  	N[key] = value
+  	setUCCInputs(N)
+  }
+  const [onSubmitingUCC, setOnSubmitUCC] = useState(false)
+  const handleUUCUpload = async () => {
+  	if (UCCInputs.password && 
+  	   UCCInputs.token && 
+  	   UCCInputs.chain && 
+  	   UCCInputs.ca && 
+  	   UCCInputs.link &&
+  	   UCCInputs.doic && 
+  	   UCCInputs.pac &&
+  	   UCCInputs.cc) {
+  	      setOnSubmitUCC(true)
+  	      const UCCinputTosumbit = {...UCCInputs}
+  	      delete UCCinputTosumbit.password
+  	   	  try {
+             const response = await fetch(`${baseEndpoint}/records/writeCurrentCalls?id=${id}`, {
+               method: 'POST',
+               headers: {
+                 'Content-Type': 'application/json',
+                 'X-Srt': 'main',
+                 'X-application-password': UCCInputs.password
+               },
+               body: JSON.stringify(UCCinputTosumbit) 
+             });
+             if (response.ok) {
+               setIsOnUploader(false);
+               window.location.reload();
+             } else {
+               throw new Error('Submission failed');
+             }
+          } catch (error) {
+            console.error(error);
+          } finally {
+            setOnSubmitUCC(false);
+          }
+  	   }
+  }
+
+  const [notUCCInputs, setNotUCCInputs] = useState({
+  	 password: '',
+  	 token: '',
+  	 chain: '',
+  	 ca: '',
+  	 link: '',
+  	 doic: '',
+  	 pac: '',
+  	 cc: '',
+  	 fdperf: '',
+  	 fwperf: '',
+  	 fmperf: '',
+  	 date: new Date()
+  })
+  const setNotUUCInputs = (key, value) => {
+  	const N = {...notUCCInputs}
+  	N[key] = value
+  	setNotUCCInputs(N)
+  }
+  const [onSubmitingNotUCC, setOnSubmitNotUCC] = useState(false)
+  const handleNotUUCUpload = async () => {
+  	if (notUCCInputs.password && 
+  	   notUCCInputs.token && 
+  	   notUCCInputs.chain && 
+  	   notUCCInputs.ca && 
+  	   notUCCInputs.link &&
+  	   notUCCInputs.doic && 
+  	   notUCCInputs.pac &&
+  	   notUCCInputs.cc &&
+  	   notUCCInputs.fdperf &&
+  	   notUCCInputs.fwperf &&
+  	   notUCCInputs.fmperf) {
+  	      setOnSubmitNotUCC(true)
+  	      const notUCCinputTosumbit = {...notUCCInputs}
+  	      delete notUCCinputTosumbit.password
+  	   	  try {
+             const response = await fetch(`${baseEndpoint}/records/writeHistory?id=${id}`, {
+               method: 'POST',
+               headers: {
+                 'Content-Type': 'application/json',
+                 'X-Srt': 'main',
+                 'X-application-password': notUCCInputs.password
+               },
+               body: JSON.stringify(notUCCinputTosumbit) 
+             });
+             if (response.ok) {
+               setIsOnUploader(false);
+               window.location.reload();
+             } else {
+               throw new Error('Submission failed');
+             }
+          } catch (error) {
+            console.error(error);
+          } finally {
+            setOnSubmitNotUCC(false);
+          }
+  	  }
+  }
+  
   
   return (
     <>
@@ -99,15 +228,15 @@ export default function Overview() {
                 </tr>
               </thead>                         
               <tbody>
-                {[1,2,3].map((list, index) => (
+                {(user?.currentCallsList?.sort((a, b) => new Date(b.date) - new Date(a.date)) ?? []).map((list, index) => (
                   <tr key={index} className='home-table-databody'>
-                    <td className='home-table-data'>1234-5678-xxxx</td>
-                    <td className='home-table-data'>Dont know what to write here</td>
-                    <td className='home-table-data'>$microL20</td>
-                    <td className='home-table-data'><a href={''}>https://123.com</a></td>
-                    <td className='home-table-data'>10-03-2024</td>
-                    <td className='home-table-data'>$30.2</td>
-                    <td className='home-table-data'>$10</td>
+                    <td className='home-table-data'>{list.token}</td>
+                    <td className='home-table-data'>{list.chain}</td>
+                    <td className='home-table-data'>${list.ca}</td>
+                    <td className='home-table-data'><a href={list.link}>{list.link}</a></td>
+                    <td className='home-table-data'>{list.doic}</td>
+                    <td className='home-table-data'>${list.pac}</td>
+                    <td className='home-table-data'>{list.cc}</td>
                   </tr>
                 ))}
               </tbody>
@@ -133,18 +262,18 @@ export default function Overview() {
                 </tr>
               </thead>                         
               <tbody>
-                {[1,2,3].map((list, index) => (
+                {(user?.history?.sort((a, b) => new Date(b.date) - new Date(a.date)) ?? []).map((list, index) => (
                   <tr key={index} className='home-table-databody'>
-                    <td className='home-table-data'>1234-5678-xxxx</td>
-                    <td className='home-table-data'>Dont know what to write here</td>
-                    <td className='home-table-data'>$microL20</td>
-                    <td className='home-table-data'><a href={''}>https://123.com</a></td>
-                    <td className='home-table-data'>10-03-2024</td>
-                    <td className='home-table-data'>$30.2</td>
-                    <td className='home-table-data'>$10</td>
-                    <td className='home-table-data'>20%</td>
-                    <td className='home-table-data'>10%</td>
-                    <td className='home-table-data'>30%</td>
+                    <td className='home-table-data'>{list.token}</td>
+                    <td className='home-table-data'>{list.chain}</td>
+                    <td className='home-table-data'>{list.ca}</td>
+                    <td className='home-table-data'><a href={list.link}>{list.link}</a></td>
+                    <td className='home-table-data'>{list.doic}</td>
+                    <td className='home-table-data'>${list.pac}</td>
+                    <td className='home-table-data'>{list.cc}</td>
+                    <td className='home-table-data'>{list.fdperf}%</td>
+                    <td className='home-table-data'>{list.fwperf}%</td>
+                    <td className='home-table-data'>{list.fmperf}%</td>
                   </tr>
                 ))}
               </tbody>
@@ -184,6 +313,60 @@ export default function Overview() {
           <TailSpin width={20} height={20} color={'blue'} />
   	   </div> 
   	 )}
+
+  	 {isOnUploader &&
+  	   <div id='tint'>
+  	     <div id='home-upload-cont'>
+  	        <div style={{ fontFamily: 'poppins' }}>Update Record</div>
+  	        <div id='overview-upload-pick-cont'>  
+  	           <div className={isOnUCC ? 'overview-upload-pick overview-upload-pick-active' : 'overview-upload-pick'} onClick={()=> {
+  	           	 if (!isOnUCC) setIsOnUCC(true)
+  	           }}>Update Current Calls</div>
+  	           <div className={!isOnUCC ? 'overview-upload-pick overview-upload-pick-active' : 'overview-upload-pick'} onClick={()=> {
+  	           	 if (isOnUCC) setIsOnUCC(false)
+  	           }}>Update History</div>
+  	        </div>
+  	        {isOnUCC ? (
+  	           <>
+  	            <input type='text' name='name' value={UCCInputs.password} onChange={e => setUUCInputs('password', e.target.value)} className='home-uploader-input' placeholder='Password' />
+  	            <input type='text' name='name' value={UCCInputs.token} onChange={e => setUUCInputs('token', e.target.value)} className='home-uploader-input' placeholder='Token' />
+  	            <input type='text' name='name' value={UCCInputs.chain} onChange={e => setUUCInputs('chain', e.target.value)} className='home-uploader-input' placeholder='Chain' />
+  	            <input type='text' name='name' value={UCCInputs.ca} onChange={e => setUUCInputs('ca', e.target.value)} className='home-uploader-input' placeholder='CA' />
+  	            <input type='text' name='name' value={UCCInputs.link} onChange={e => setUUCInputs('link', e.target.value)} className='home-uploader-input' placeholder='Link' />
+  	            <input type='text' name='name' value={UCCInputs.doic} onChange={e => setUUCInputs('doic', e.target.value)} className='home-uploader-input' placeholder='Date of Initial Call' />
+  	            <input type='text' name='name' value={UCCInputs.pac} onChange={e => setUUCInputs('pac', e.target.value)} className='home-uploader-input' placeholder='Price at call' />
+  	            <input type='text' name='name' value={UCCInputs.cc} onChange={e => setUUCInputs('cc', e.target.value)} className='home-uploader-input' placeholder='Current call' />
+                <div id='home-uploader-footer'>
+                  <button className='home-uploader-footer-btn' onClick={()=> setIsOnUploader(false)}>Close</button>
+                  <button className='home-uploader-footer-btn' disabled={onSubmitingUCC} style={{ backgroundColor: 'dodgerblue', color: 'white', fontFamily: 'poppins' }} onClick={async () => await handleUUCUpload()}>
+                    {onSubmitingUCC ? <TailSpin width={20} height={20} color={'white'} /> : 'Upload'}
+                  </button>
+                </div>
+  	           </> 
+  	        ) : (
+  	          <>
+  	            <input type='text' name='name' value={notUCCInputs.password} onChange={e => setNotUUCInputs('password', e.target.value)} className='home-uploader-input' placeholder='Password' />
+  	            <input type='text' name='name' value={notUCCInputs.token} onChange={e => setNotUUCInputs('token', e.target.value)} className='home-uploader-input' placeholder='Token' />
+  	            <input type='text' name='name' value={notUCCInputs.chain} onChange={e => setNotUUCInputs('chain', e.target.value)} className='home-uploader-input' placeholder='Chain' />
+  	            <input type='text' name='name' value={notUCCInputs.ca} onChange={e => setNotUUCInputs('ca', e.target.value)} className='home-uploader-input' placeholder='CA' />
+  	            <input type='text' name='name' value={notUCCInputs.link} onChange={e => setNotUUCInputs('link', e.target.value)} className='home-uploader-input' placeholder='Link' />
+  	            <input type='text' name='name' value={notUCCInputs.doic} onChange={e => setNotUUCInputs('doic', e.target.value)} className='home-uploader-input' placeholder='Date of Initial Call' />
+  	            <input type='text' name='name' value={notUCCInputs.pac} onChange={e => setNotUUCInputs('pac', e.target.value)} className='home-uploader-input' placeholder='Price at call' />
+  	            <input type='text' name='name' value={notUCCInputs.cc} onChange={e => setNotUUCInputs('cc', e.target.value)} className='home-uploader-input' placeholder='Current call' />
+  	            <input type='text' name='name' value={notUCCInputs.fdperf} onChange={e => setNotUUCInputs('fdperf', e.target.value)} className='home-uploader-input' placeholder='1d Performance' />
+  	            <input type='text' name='name' value={notUCCInputs.fwperf} onChange={e => setNotUUCInputs('fwperf', e.target.value)} className='home-uploader-input' placeholder='1w Performance' />
+  	            <input type='text' name='name' value={notUCCInputs.fmperf} onChange={e => setNotUUCInputs('fmperf', e.target.value)} className='home-uploader-input' placeholder='1m Performance' />
+                <div id='home-uploader-footer'>
+                  <button className='home-uploader-footer-btn' onClick={()=> setIsOnUploader(false)}>Close</button>
+                  <button className='home-uploader-footer-btn' disabled={onSubmitingNotUCC} style={{ backgroundColor: 'dodgerblue', color: 'white', fontFamily: 'poppins' }} onClick={async () => await handleNotUUCUpload()}>
+                    {onSubmitingNotUCC ? <TailSpin width={20} height={20} color={'white'} /> : 'Upload'}
+                  </button>
+                </div>
+  	          </>
+  	        )}
+  	     </div>
+  	   </div>	
+  	 }
    </>
   )
 }
