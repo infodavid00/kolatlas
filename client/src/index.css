@@ -218,6 +218,9 @@ body::-webkit-scrollbar-thumb {
   color: white;
   margin-bottom: 1em;
 }
+.home-table-votes-ico:hover {
+  color: dodgerblue;
+}
 
 
 #overview-b {
@@ -280,7 +283,7 @@ body::-webkit-scrollbar-thumb {
   font-size: 14.5px;
 }
 .ob-comment-time {
-  font-size: 13px;
+  font-size: 12px;
   opacity: 0.8;
 }
 

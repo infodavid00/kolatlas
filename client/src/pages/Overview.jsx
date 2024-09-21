@@ -224,7 +224,7 @@ export default function Overview() {
                   <th>Link</th>
                   <th>Date of Initial Call</th>
                   <th>Price at call</th>
-                  <th>Current Call</th>
+                  <th>Current Price</th>
                 </tr>
               </thead>                         
               <tbody>
@@ -232,11 +232,11 @@ export default function Overview() {
                   <tr key={index} className='home-table-databody'>
                     <td className='home-table-data'>{list.token}</td>
                     <td className='home-table-data'>{list.chain}</td>
-                    <td className='home-table-data'>${list.ca}</td>
+                    <td className='home-table-data'>{list.ca}</td>
                     <td className='home-table-data'><a href={list.link}>{list.link}</a></td>
                     <td className='home-table-data'>{list.doic}</td>
                     <td className='home-table-data'>${list.pac}</td>
-                    <td className='home-table-data'>{list.cc}</td>
+                    <td className='home-table-data'>${list.cc}</td>
                   </tr>
                 ))}
               </tbody>
@@ -297,7 +297,7 @@ export default function Overview() {
              	  <div><div className='ob-comment-logo'>{((element.text ?? '').split('')[0])?.toUpperCase()}</div></div>
              	  <div>
              	    <div className='ob-comment-txt'>{element.text}</div>
-             	    <div className='ob-comment-time'>commented {dayjs(element.date).fromNow()}</div>
+             	    <div className='ob-comment-time'>{dayjs(element.date).fromNow()}</div>
              	  </div>
              	</div>
              ))}
@@ -335,7 +335,7 @@ export default function Overview() {
   	            <input type='text' name='name' value={UCCInputs.link} onChange={e => setUUCInputs('link', e.target.value)} className='home-uploader-input' placeholder='Link' />
   	            <input type='text' name='name' value={UCCInputs.doic} onChange={e => setUUCInputs('doic', e.target.value)} className='home-uploader-input' placeholder='Date of Initial Call' />
   	            <input type='text' name='name' value={UCCInputs.pac} onChange={e => setUUCInputs('pac', e.target.value)} className='home-uploader-input' placeholder='Price at call' />
-  	            <input type='text' name='name' value={UCCInputs.cc} onChange={e => setUUCInputs('cc', e.target.value)} className='home-uploader-input' placeholder='Current call' />
+  	            <input type='text' name='name' value={UCCInputs.cc} onChange={e => setUUCInputs('cc', e.target.value)} className='home-uploader-input' placeholder='Current price' />
                 <div id='home-uploader-footer'>
                   <button className='home-uploader-footer-btn' onClick={()=> setIsOnUploader(false)}>Close</button>
                   <button className='home-uploader-footer-btn' disabled={onSubmitingUCC} style={{ backgroundColor: 'dodgerblue', color: 'white', fontFamily: 'poppins' }} onClick={async () => await handleUUCUpload()}>
