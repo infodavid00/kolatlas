@@ -91,7 +91,6 @@ export async function deleteRecord(request, response) {
 
 export async function editRecord(request, response) {
   try {
-    console.log('hihiihi')
     const body = JSON.parse(request.body);
     const recordToupdate = {}; 
         

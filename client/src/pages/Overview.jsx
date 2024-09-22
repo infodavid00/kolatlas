@@ -66,12 +66,29 @@ export default function Overview() {
   	 }
   }
 
+  const [isShowingDelete, setIsShowingDelete] = useState(false)
+  const [isOnEditing, setIsOnEditing] = useState(false)
+  const [isOnEditingUCC, setIsEditingOnUCC] = useState(true)
+  const [isOnDeletingUCC, setIsOnDeletingUCC] = useState(true)
+
   const handleKeyDown = (event) => {
     if (event.ctrlKey && (event.key === 'x' || event.key === 'X')) {
-      setIsOnUploader(true);
+       setIsOnUploader(true);
     }
-  };
-
+    if (event.ctrlKey && (event.key === '2')) {
+       event.preventDefault();
+       setIsOnEditing(true);
+       setUccElementEditIndex(0); 
+       setNotUccElementEditIndex(0); 
+    }
+    if (event.ctrlKey && (event.key === '1')) {
+       event.preventDefault();
+       setIsShowingDelete(true);
+       //setUccElementEditIndex(0); 
+       //setNotUccElementEditIndex(0); 
+    }
+ };
+  
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
     return () => {
@@ -194,8 +211,163 @@ export default function Overview() {
   	  }
   }
 
-  const [isOnEditing, setIsOnEditing] = useState(true)
+
+  const [notuccElementEditIndex, setNotUccElementEditIndex] = useState(0)
+  const [notuccElementEdit, setNotUccElementEdit] =  
+        useState(typeof user === "object" && user?.history ?  user?.history[0] : {})
+
+  const [uccElementEditIndex, setUccElementEditIndex] = useState(0)
+  const [uccElementEdit, setUccElementEdit] =  
+        useState(typeof user === "object" && user?.currentCallsList ?  user?.currentCallsList[0] : {})
   
+  useEffect(() => {
+    if (typeof user === "object" && user?.currentCallsList) {
+       setUccElementEdit(user.currentCallsList[uccElementEditIndex]);
+    }
+  }, [uccElementEditIndex]);
+
+  useEffect(() => {
+    if (typeof user === "object" && user?.history) {
+       setNotUccElementEdit(user.history[notuccElementEditIndex]);
+    }
+  }, [notuccElementEditIndex]);
+
+ 
+  useEffect(() => {
+    if (typeof user === "object" && user?.currentCallsList && uccElementEditIndex === 0) {
+       setUccElementEdit(user.currentCallsList[0]);
+    }
+    if (typeof user === "object" && user?.history && notuccElementEditIndex === 0) {
+       setNotUccElementEdit(user.history[0]);
+    }
+  }, [user]);
+  const [editPassword, setEditPassword] = useState('')
+  
+const setUccElementEditInputs = (key, value) => {
+    const N = { ...uccElementEdit }; // Fix: spread uccElementEdit
+    N[key] = value;
+    setUccElementEdit(N);
+};
+
+const setNotUccElementEditInputs = (key, value) => {
+    const N = { ...notuccElementEdit }; // Fix: spread notuccElementEdit
+    N[key] = value;
+    setNotUccElementEdit(N);
+};
+
+  const [isEditingCurrentCalls, setisEditingCurrentCalls] = useState(false)   
+  const [isEditingHistory, setisEditingHistory] = useState(false)
+    
+  const handleCurrentCallsEditUpload = async () => {
+  	try {      
+  	  setisEditingCurrentCalls(true)
+  	  const ccl = {currentCallsList: [...user?.currentCallsList]}
+  	  ccl.currentCallsList[uccElementEditIndex] = uccElementEdit
+      const makerequest = await fetch(`${baseEndpoint}/records/edit?id=${id}`, {
+         method: 'PUT',
+         headers: { 
+            'X-Srt': 'main',               	 
+            'X-application-password': editPassword
+         },
+         body: JSON.stringify(ccl)
+      });
+      if (makerequest.ok) {
+          window.location.reload()
+      } else {
+         throw { message: null}
+      }
+    } catch (error) {
+      console.error(error);
+      setisEditingCurrentCalls(false);
+      return; 
+    }
+  }
+
+  const handleHistoryEditUpload = async () => {
+  	try {    
+  	  setisEditingHistory(true)
+  	  const ch = {history: [...user?.history]}
+  	  console.log(user.history, notuccElementEdit)
+  	  ch.history[notuccElementEditIndex] = notuccElementEdit
+      const makerequest = await fetch(`${baseEndpoint}/records/edit?id=${id}`, {
+         method: 'PUT',
+         headers: { 
+            'X-Srt': 'main',               	 
+            'X-application-password': editPassword
+         },
+         body: JSON.stringify(ch)
+      });
+      if (makerequest.ok) {
+          window.location.reload()
+      } else {
+         throw { message: null}
+      }
+    } catch (error) {
+      console.error(error);
+      setisEditingHistory(false);
+      return; 
+    }
+  }
+
+
+  
+  const [notuccElementDeleteIndex, setNotUccElementDeleteIndex] = useState(0)
+  const [uccElementDeleteIndex, setUccElementDeleteIndex] = useState(0)
+
+  const [isDeletingCurrentCalls, setisDeletingCurrentCalls] = useState(false)
+  const [isDeletingHistory, setisDeletingHistory] = useState(false)
+
+  async function handleCurrentCallsDelete() {
+     const newOne = { currentCallsList:
+        user.currentCallsList.filter((e, index) => e.token  !==  user.currentCallsList[uccElementDeleteIndex].token) 
+     }
+     setisDeletingCurrentCalls(true)
+  	 try {    
+      const makerequest = await fetch(`${baseEndpoint}/records/edit?id=${id}`, {
+         method: 'PUT',
+         headers: { 
+            'X-Srt': 'main',               	 
+            'X-application-password': editPassword
+         },
+         body: JSON.stringify(newOne)
+      });
+      if (makerequest.ok) {
+          window.location.reload()
+      } else {
+         throw { message: null}
+      }
+     } catch (error) {
+      console.error(error);
+      setisDeletingCurrentCalls(false);
+      return; 
+     }
+  }
+  
+  async function handleHistoryDelete() {
+     const newOne = { history:
+        user.history.filter((e, index) => e.token  !==  user.history[notuccElementDeleteIndex].token) 
+     }
+     setisDeletingHistory(true)    
+  	 try {    
+      const makerequest = await fetch(`${baseEndpoint}/records/edit?id=${id}`, {
+         method: 'PUT',
+         headers: { 
+            'X-Srt': 'main',               	 
+            'X-application-password': editPassword
+         },
+         body: JSON.stringify(newOne)
+      });
+      if (makerequest.ok) {
+          window.location.reload()
+      } else {
+         throw { message: null}
+      }
+     } catch (error) {
+      console.error(error);
+      setisDeletingHistory(false);
+      return; 
+     }
+  }
   
   return (
     <>
@@ -316,7 +488,7 @@ export default function Overview() {
   	   </div> 
   	 )}
 
-  	 {isOnUploader &&
+  	 {isOnUploader && user &&
   	   <div id='tint'>
   	     <div id='home-upload-cont'>
   	        <div style={{ fontFamily: 'poppins' }}>Update Record</div>
@@ -373,60 +545,142 @@ export default function Overview() {
 
 
 
-
-    {isOnEditing &&
+    {isOnEditing && user &&
   	   <div id='tint'>
   	     <div id='home-upload-cont'>
-  	        <div style={{ fontFamily: 'poppins' }}>Update Record</div>
+  	        <div style={{ fontFamily: 'poppins' }}>Edit Record</div>
   	        <div id='overview-upload-pick-cont'>  
-  	           <div className={isOnUCC ? 'overview-upload-pick overview-upload-pick-active' : 'overview-upload-pick'} onClick={()=> {
-  	           	 if (!isOnUCC) setIsOnUCC(true)
-  	           }}>Update Current Calls</div>
-  	           <div className={!isOnUCC ? 'overview-upload-pick overview-upload-pick-active' : 'overview-upload-pick'} onClick={()=> {
-  	           	 if (isOnUCC) setIsOnUCC(false)
-  	           }}>Update History</div>
+  	           <div className={isOnEditingUCC ? 'overview-upload-pick overview-upload-pick-active' : 'overview-upload-pick'} onClick={()=> {
+  	           	 if (!isOnEditingUCC) setIsEditingOnUCC(true)
+  	           }}>Edit Current Calls</div>
+  	           <div className={!isOnEditingUCC ? 'overview-upload-pick overview-upload-pick-active' : 'overview-upload-pick'} onClick={()=> {
+  	           	 if (isOnEditingUCC) setIsEditingOnUCC(false)
+  	           }}>Edit History</div>
   	        </div>
-  	        {isOnUCC ? (
+  	        {isOnEditingUCC  ? (
+  	           <> 
+  	           {Array.isArray(user.currentCallsList)  && user.currentCallsList.length > 0 ?
   	           <>
-  	            <input type='text' name='name' value={UCCInputs.password} onChange={e => setUUCInputs('password', e.target.value)} className='home-uploader-input' placeholder='Password' />
-  	            <input type='text' name='name' value={UCCInputs.token} onChange={e => setUUCInputs('token', e.target.value)} className='home-uploader-input' placeholder='Token' />
-  	            <input type='text' name='name' value={UCCInputs.chain} onChange={e => setUUCInputs('chain', e.target.value)} className='home-uploader-input' placeholder='Chain' />
-  	            <input type='text' name='name' value={UCCInputs.ca} onChange={e => setUUCInputs('ca', e.target.value)} className='home-uploader-input' placeholder='CA' />
-  	            <input type='text' name='name' value={UCCInputs.link} onChange={e => setUUCInputs('link', e.target.value)} className='home-uploader-input' placeholder='Link' />
-  	            <input type='text' name='name' value={UCCInputs.doic} onChange={e => setUUCInputs('doic', e.target.value)} className='home-uploader-input' placeholder='Date of Initial Call' />
-  	            <input type='text' name='name' value={UCCInputs.pac} onChange={e => setUUCInputs('pac', e.target.value)} className='home-uploader-input' placeholder='Price at call' />
-  	            <input type='text' name='name' value={UCCInputs.cc} onChange={e => setUUCInputs('cc', e.target.value)} className='home-uploader-input' placeholder='Current price' />
+  	           <select className='home-uploader-input' value={uccElementEditIndex} onChange={e => {
+               	setUccElementEditIndex(event.target.value)
+               }}>
+               {user.currentCallsList.map((element, index)=> (
+               	  <option key={index} value={index}>{index + 1} - {element.token}</option>
+               ))}
+               </select>
+  	            <input type='text' name='name' value={editPassword} onChange={e => setEditPassword(e.target.value)} className='home-uploader-input' placeholder='Password' />
+  	            <input type='text' name='name' value={uccElementEdit.token} onChange={e => setUccElementEditInputs('token', e.target.value)} className='home-uploader-input' placeholder='Token' />
+  	            <input type='text' name='name' value={uccElementEdit.chain} onChange={e => setUccElementEditInputs('chain', e.target.value)} className='home-uploader-input' placeholder='Chain' />
+  	            <input type='text' name='name' value={uccElementEdit.ca} onChange={e => setUccElementEditInputs('ca', e.target.value)} className='home-uploader-input' placeholder='CA' />
+  	            <input type='text' name='name' value={uccElementEdit.link} onChange={e => setUccElementEditInputs('link', e.target.value)} className='home-uploader-input' placeholder='Link' />
+  	            <input type='text' name='name' value={uccElementEdit.doic} onChange={e => setUccElementEditInputs('doic', e.target.value)} className='home-uploader-input' placeholder='Date of Initial Call' />
+  	            <input type='text' name='name' value={uccElementEdit.pac} onChange={e => setUccElementEditInputs('pac', e.target.value)} className='home-uploader-input' placeholder='Price at call' />
+  	            <input type='text' name='name' value={uccElementEdit.cc} onChange={e => setUccElementEditInputs('cc', e.target.value)} className='home-uploader-input' placeholder='Current price' />
                 <div id='home-uploader-footer'>
-                  <button className='home-uploader-footer-btn' onClick={()=> setIsOnUploader(false)}>Close</button>
-                  <button className='home-uploader-footer-btn' disabled={onSubmitingUCC} style={{ backgroundColor: 'dodgerblue', color: 'white', fontFamily: 'poppins' }} onClick={async () => await handleUUCUpload()}>
-                    {onSubmitingUCC ? <TailSpin width={20} height={20} color={'white'} /> : 'Upload'}
+                  <button className='home-uploader-footer-btn' onClick={()=> setIsOnEditing(false)}>Close</button>
+                  <button className='home-uploader-footer-btn' disabled={isEditingCurrentCalls} style={{ backgroundColor: 'dodgerblue', color: 'white', fontFamily: 'poppins' }} onClick={async () => await handleCurrentCallsEditUpload()}>
+                    {isEditingCurrentCalls ? <TailSpin width={20} height={20} color={'white'} /> : 'Rewrite'}
                   </button>
                 </div>
+                </>
+                : <button className='home-uploader-footer-btn' onClick={()=> setIsOnEditing(false)}>Close</button>}
   	           </> 
   	        ) : (
-  	          <>
-  	            <input type='text' name='name' value={notUCCInputs.password} onChange={e => setNotUUCInputs('password', e.target.value)} className='home-uploader-input' placeholder='Password' />
-  	            <input type='text' name='name' value={notUCCInputs.token} onChange={e => setNotUUCInputs('token', e.target.value)} className='home-uploader-input' placeholder='Token' />
-  	            <input type='text' name='name' value={notUCCInputs.chain} onChange={e => setNotUUCInputs('chain', e.target.value)} className='home-uploader-input' placeholder='Chain' />
-  	            <input type='text' name='name' value={notUCCInputs.ca} onChange={e => setNotUUCInputs('ca', e.target.value)} className='home-uploader-input' placeholder='CA' />
-  	            <input type='text' name='name' value={notUCCInputs.link} onChange={e => setNotUUCInputs('link', e.target.value)} className='home-uploader-input' placeholder='Link' />
-  	            <input type='text' name='name' value={notUCCInputs.doic} onChange={e => setNotUUCInputs('doic', e.target.value)} className='home-uploader-input' placeholder='Date of Initial Call' />
-  	            <input type='text' name='name' value={notUCCInputs.pac} onChange={e => setNotUUCInputs('pac', e.target.value)} className='home-uploader-input' placeholder='Price at call' />
-  	            <input type='text' name='name' value={notUCCInputs.cc} onChange={e => setNotUUCInputs('cc', e.target.value)} className='home-uploader-input' placeholder='Current call' />
-  	            <input type='text' name='name' value={notUCCInputs.fdperf} onChange={e => setNotUUCInputs('fdperf', e.target.value)} className='home-uploader-input' placeholder='1d Performance' />
-  	            <input type='text' name='name' value={notUCCInputs.fwperf} onChange={e => setNotUUCInputs('fwperf', e.target.value)} className='home-uploader-input' placeholder='1w Performance' />
-  	            <input type='text' name='name' value={notUCCInputs.fmperf} onChange={e => setNotUUCInputs('fmperf', e.target.value)} className='home-uploader-input' placeholder='1m Performance' />
+  	           <> 
+  	           {Array.isArray(user.history)  && user.history.length > 0 ?
+  	           <> 	          
+   	            <select className='home-uploader-input' value={notuccElementEditIndex} onChange={e => {
+                	setNotUccElementEditIndex(event.target.value) }}>
+                {user.history.map((element, index)=> (
+               	  <option key={index} value={index}>{index + 1} - {element.token}</option>
+                ))}
+                </select>
+  	            <input type='text' name='name' value={editPassword} onChange={e => setEditPassword(e.target.value)} className='home-uploader-input' placeholder='Password' />
+  	            <input type='text' name='name' value={notuccElementEdit.token} onChange={e => setNotUccElementEditInputs('token', e.target.value)} className='home-uploader-input' placeholder='Token' />
+  	            <input type='text' name='name' value={notuccElementEdit.chain} onChange={e => setNotUccElementEditInputs('chain', e.target.value)} className='home-uploader-input' placeholder='Chain' />
+  	            <input type='text' name='name' value={notuccElementEdit.ca} onChange={e => setNotUccElementEditInputs('ca', e.target.value)} className='home-uploader-input' placeholder='CA' />
+  	            <input type='text' name='name' value={notuccElementEdit.link} onChange={e => setNotUccElementEditInputs('link', e.target.value)} className='home-uploader-input' placeholder='Link' />
+  	            <input type='text' name='name' value={notuccElementEdit.doic} onChange={e => setNotUccElementEditInputs('doic', e.target.value)} className='home-uploader-input' placeholder='Date of Initial Call' />
+  	            <input type='text' name='name' value={notuccElementEdit.pac} onChange={e => setNotUccElementEditInputs('pac', e.target.value)} className='home-uploader-input' placeholder='Price at call' />
+  	            <input type='text' name='name' value={notuccElementEdit.cc} onChange={e => setNotUccElementEditInputs('cc', e.target.value)} className='home-uploader-input' placeholder='Current call' />
+  	            <input type='text' name='name' value={notuccElementEdit.fdperf} onChange={e => setNotUccElementEditInputs('fdperf', e.target.value)} className='home-uploader-input' placeholder='1d Performance' />
+  	            <input type='text' name='name' value={notuccElementEdit.fwperf} onChange={e => setNotUccElementEditInputs('fwperf', e.target.value)} className='home-uploader-input' placeholder='1w Performance' />
+  	            <input type='text' name='name' value={notuccElementEdit.fmperf} onChange={e => setNotUccElementEditInputs('fmperf', e.target.value)} className='home-uploader-input' placeholder='1m Performance' />
                 <div id='home-uploader-footer'>
-                  <button className='home-uploader-footer-btn' onClick={()=> setIsOnUploader(false)}>Close</button>
-                  <button className='home-uploader-footer-btn' disabled={onSubmitingNotUCC} style={{ backgroundColor: 'dodgerblue', color: 'white', fontFamily: 'poppins' }} onClick={async () => await handleNotUUCUpload()}>
-                    {onSubmitingNotUCC ? <TailSpin width={20} height={20} color={'white'} /> : 'Upload'}
+                  <button className='home-uploader-footer-btn' onClick={()=> setIsOnEditing(false)}>Close</button>
+                  <button className='home-uploader-footer-btn' disabled={isEditingHistory} style={{ backgroundColor: 'dodgerblue', color: 'white', fontFamily: 'poppins' }} onClick={async () => await handleHistoryEditUpload()}>
+                    {isEditingHistory ? <TailSpin width={20} height={20} color={'white'} /> : 'Rewrite'}
                   </button>
                 </div>
+                </>
+                : <button className='home-uploader-footer-btn' onClick={()=> setIsOnEditing(false)}>Close</button>}
   	          </>
   	        )}
   	     </div>
   	   </div>	
   	 }
+
+
+
+       {isShowingDelete && (
+        <div id='tint'>	
+          <div id='home-upload-cont'>
+            <div style={{ fontFamily: 'poppins' }}>Delete Attributes</div>
+            <div id='overview-upload-pick-cont'>  
+  	           <div className={isOnDeletingUCC ? 'overview-upload-pick overview-upload-pick-active' : 'overview-upload-pick'} onClick={()=> {
+  	           	 if (!isOnDeletingUCC) setIsOnDeletingUCC(true)
+  	           }}>Delete Current Calls</div>
+  	           <div className={!isOnDeletingUCC ? 'overview-upload-pick overview-upload-pick-active' : 'overview-upload-pick'} onClick={()=> {
+  	           	 if (isOnDeletingUCC) setIsOnDeletingUCC(false)
+  	           }}>Delete History</div>
+  	        </div>
+  	        
+  	        {isOnDeletingUCC  ? (
+  	           <> 
+  	           {Array.isArray(user.currentCallsList)  && user.currentCallsList.length > 0 ?
+  	           <>
+  	           <select className='home-uploader-input' value={uccElementDeleteIndex} onChange={e => {
+               	setUccElementDeleteIndex(event.target.value)
+               }}>
+               {user.currentCallsList.map((element, index)=> (
+               	  <option key={index} value={index}>{index + 1} - {element.token}</option>
+               ))}
+               </select>
+                <input type='text' name='name' value={editPassword} onChange={e => setEditPassword(e.target.value)} className='home-uploader-input' placeholder='Password' />
+                <div id='home-uploader-footer'>
+                  <button className='home-uploader-footer-btn' onClick={()=> setIsShowingDelete(false)}>Close</button>
+                  <button className='home-uploader-footer-btn' disabled={isDeletingCurrentCalls} style={{ backgroundColor: 'red', color: 'white', fontFamily: 'poppins' }} onClick={async () => await handleCurrentCallsDelete()}>
+                    {isDeletingCurrentCalls ? <TailSpin width={20} height={20} color={'white'} /> : 'Delete'}
+                  </button>
+                </div>
+                </>
+                : <button className='home-uploader-footer-btn' onClick={()=> setIsShowingDelete(false)}>Close</button>}
+  	           </> 
+  	        ) : (
+  	           <> 
+  	           {Array.isArray(user.history)  && user.history.length > 0 ?
+  	           <>
+  	           <select className='home-uploader-input' value={notuccElementDeleteIndex} onChange={e => {
+               	setNotUccElementDeleteIndex(event.target.value)
+               }}>
+               {user.history.map((element, index)=> (
+               	  <option key={index} value={index}>{index + 1} - {element.token}</option>
+               ))}
+               </select>
+               <input type='text' name='name' value={editPassword} onChange={e => setEditPassword(e.target.value)} className='home-uploader-input' placeholder='Password' />
+                <div id='home-uploader-footer'>
+                  <button className='home-uploader-footer-btn' onClick={()=> setIsShowingDelete(false)}>Close</button>
+                  <button className='home-uploader-footer-btn' disabled={isDeletingHistory} style={{ backgroundColor: 'red', color: 'white', fontFamily: 'poppins' }} onClick={async () => await handleHistoryDelete()}>
+                    {isDeletingHistory ? <TailSpin width={20} height={20} color={'white'} /> : 'Delete'}
+                  </button>
+                </div>
+                </>
+                : <button className='home-uploader-footer-btn' onClick={()=> setIsShowingDelete(false)}>Close</button>}
+  	           </> 
+  	        )}
+          </div>
+        </div>
+      )}
    </>
   )
 }
