@@ -7,6 +7,9 @@ import { useParams } from 'react-router-dom'
 import { baseEndpoint } from '../var.jsx'
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 dayjs.extend(relativeTime);
 
@@ -368,13 +371,22 @@ const setNotUccElementEditInputs = (key, value) => {
       return; 
      }
   }
+
+  function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+          toast.success('copied to clipboard!');
+      }).catch(err => {
+          toast.success('Failed to copy');
+      });
+  }
+  
   
   return (
     <>
     {typeof user === 'object' && user?._id ? (
   	 <div id='overview'> 
   	    <div id='overview-a'>
-  	       <div className='overview-header'>Metadata</div>
+  	       <div className='overview-header'>KOL Profile</div>
   	       <div id='oa-metadata'>  
   	         <img id='oa-metadata-profile' src={user.image} />
   	         <div>  
@@ -382,7 +394,7 @@ const setNotUccElementEditInputs = (key, value) => {
   	            <a className='oa-metadata-text' style={{ color: 'dodgerblue', textDecoration: 'none' }} href={user.x}>{user.x}</a>
   	            <a className='oa-metadata-text' style={{ color: 'dodgerblue', textDecoration: 'none' }} href={user.tg}>{user.tg}</a>
   	            <div className='oa-metadata-text'>{user.chains}</div>
-  	            <div className='oa-metadata-text' style={{ fontFamily: 'poppins' }}>{user.votes} Votes</div>
+  	            <div className='oa-metadata-text'>Score: {user.votes}</div>
   	         </div>
   	       </div>
            <br />
@@ -399,6 +411,7 @@ const setNotUccElementEditInputs = (key, value) => {
                   <th>Date of Initial Call</th>
                   <th>Price at call</th>
                   <th>Current Price</th>
+                  <th>% Performance</th>
                 </tr>
               </thead>                         
               <tbody>
@@ -406,11 +419,14 @@ const setNotUccElementEditInputs = (key, value) => {
                   <tr key={index} className='home-table-databody'>
                     <td className='home-table-data'>{list.token}</td>
                     <td className='home-table-data'>{list.chain}</td>
-                    <td className='home-table-data'>{list.ca}</td>
+                    <td className='home-table-data' onClick={()=> copyToClipboard(list.ca)} style={{ cursor: 'pointer', color: 'dodgerblue'}}>
+                       {list.ca.slice(0, 3)}...{list.ca.slice(list.ca.length - 3)}</td>
                     <td className='home-table-data'><a href={list.link}>{list.link}</a></td>
                     <td className='home-table-data'>{list.doic}</td>
                     <td className='home-table-data'>${list.pac}</td>
                     <td className='home-table-data'>${list.cc}</td>
+                    <td className='home-table-data'>
+                       {((Number(list.cc) / Number(list.pac)) - 1).toFixed(2) }%</td>
                   </tr>
                 ))}
               </tbody>
@@ -433,6 +449,7 @@ const setNotUccElementEditInputs = (key, value) => {
                   <th>1d performance</th>
                   <th>1w performance</th>
                   <th>1m performance</th>
+                  <th>% Performance</th>
                 </tr>
               </thead>                         
               <tbody>
@@ -440,14 +457,17 @@ const setNotUccElementEditInputs = (key, value) => {
                   <tr key={index} className='home-table-databody'>
                     <td className='home-table-data'>{list.token}</td>
                     <td className='home-table-data'>{list.chain}</td>
-                    <td className='home-table-data'>{list.ca}</td>
+                    <td className='home-table-data' onClick={()=> copyToClipboard(list.ca)} style={{ cursor: 'pointer', color: 'dodgerblue'}}>
+                       {list.ca.slice(0, 3)}...{list.ca.slice(list.ca.length - 3)}</td>
                     <td className='home-table-data'><a href={list.link}>{list.link}</a></td>
                     <td className='home-table-data'>{list.doic}</td>
                     <td className='home-table-data'>${list.pac}</td>
-                    <td className='home-table-data'>{list.cc}</td>
+                    <td className='home-table-data' onClick={()=> copyToClipboard(list.cc)} style={{ cursor: 'pointer', color: 'dodgerblue'}}>{list.cc}</td>
                     <td className='home-table-data'>{list.fdperf}%</td>
                     <td className='home-table-data'>{list.fwperf}%</td>
                     <td className='home-table-data'>{list.fmperf}%</td>
+                    <td className='home-table-data'>
+                       {((Number(list.cc) / Number(list.pac)) - 1).toFixed(2) }%</td>
                   </tr>
                 ))}
               </tbody>
@@ -681,6 +701,8 @@ const setNotUccElementEditInputs = (key, value) => {
           </div>
         </div>
       )}
+
+     <ToastContainer />
    </>
   )
 }

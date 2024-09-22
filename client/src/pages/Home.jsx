@@ -19,6 +19,13 @@ export default function Home() {
   const [records, setRecords] = useState(false);
   const [isShowingDelete, setIsShowingDelete] = useState(false)
   const [isShowingEdit, setIsShowingEdit] = useState(false)
+
+  const [isEthChecked, setIsEthChecked] = useState(false);
+  const [isBtcChecked, setIsBtcChecked] = useState(false);
+  const [isBnbChecked, setIsBnbChecked] = useState(false);
+  const [isSolChecked, setIsSolChecked] = useState(false);
+  const [isOthersChecked, setIsOthersChecked] = useState(false);
+
   
   const handleKeyDown = (event) => {
   if (event.ctrlKey && (event.key === 'x' || event.key === 'X')) {
@@ -306,13 +313,12 @@ const handleSubmit = async () => {
                 <tr>
                   <th>ID</th>
                   <th>Votes</th>
-                  <th>Photo</th>
+                  <th>Pfp</th>
                   <th>Name</th>
                   <th>X</th>
                   <th>TG</th>
                   <th>Chains</th>
                   <th>Current Calls</th>
-                  <th>More</th>
                 </tr>
               </thead>
               <tbody>
@@ -330,13 +336,12 @@ const handleSubmit = async () => {
                         }}  />
                       </div>
                     </td>
-                    <td className='home-table-data'><img className='home-table-data-profile' src={list?.image} /></td>
-                    <td className='home-table-data'>{list?.name}</td>
+                    <td className='home-table-data' onClick={()=> window.location.href = '/overview/'+ list._id} style={{ cursor: 'pointer'}}><img className='home-table-data-profile' src={list?.image} /></td>
+                    <td className='home-table-data' onClick={()=> window.location.href = '/overview/'+ list._id} style={{ cursor: 'pointer'}}>{list?.name}</td>
                     <td className='home-table-data'><a href={list?.x}>{list?.x}</a></td>
                     <td className='home-table-data'><a href={list?.tg}>{list?.tg}</a></td>
                     <td className='home-table-data'>{list?.chains}</td>
                     <td className='home-table-data'><a href={list?.currentCalls}>{list?.currentCalls}</a></td>
-                    <td className='home-table-data' onClick={()=> window.location.href = '/overview/'+ list._id}>See more</td>
                   </tr>
                 ))}
               </tbody>
@@ -388,6 +393,23 @@ const handleSubmit = async () => {
             <input type='text' name='name' className='home-uploader-input' placeholder='Name' value={elementToUpdate.name}  onChange={(e)=> handleEditInputChange('name', e.target.value)} />
             <input type='text' name='x' className='home-uploader-input' placeholder='X' value={elementToUpdate.x}  onChange={(e)=> handleEditInputChange('x', e.target.value)} />
             <input type='text' name='tg' className='home-uploader-input' placeholder='Tg' value={elementToUpdate.tg}  onChange={(e)=> handleEditInputChange('tg', e.target.value)} />
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '1em'}}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>ETH</span> 
+                  <input type='checkbox' checked={isEthChecked}
+                      onChange={(e) => setIsEthChecked(e.target.checked)} /></div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>BTC</span> 
+                   <input type='checkbox' checked={isBtcChecked}
+                      onChange={(e) => setIsBtcChecked(e.target.checked)} /></div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>SOL</span> 
+                   <input type='checkbox' checked={isSolChecked}
+                      onChange={(e) => setIsSolChecked(e.target.checked)} /></div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>BNB</span> 
+                   <input type='checkbox' checked={isBnbChecked}
+                      onChange={(e) => setIsBnbChecked(e.target.checked)} /></div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>OTHERS</span> 
+                   <input type='checkbox' checked={isOthersChecked}
+                      onChange={(e) => setIsOthersChecked(e.target.checked)} /></div>
+            </div>
             <input type='text' name='chains' className='home-uploader-input' placeholder='Chains' value={elementToUpdate.chains} onChange={handleInputChange}  onChange={(e)=> handleEditInputChange('chains', e.target.value)} />
             <input type='text' name='currentCalls' className='home-uploader-input' placeholder='Current Calls' value={elementToUpdate.currentCalls}  onChange={(e)=> handleEditInputChange('currentCalls', e.target.value)} />
             <input type='file' id='file-input-edit' style={{ display: 'none' }} onChange={handleEditImageChange} />

@@ -1,37 +1,37 @@
 {
    "assets/Poppins-SemiBold-B_fPDAUb.ttf": {
-      "etag": "UDJzbHBVOEFzLi1zMmV0ODkuZHNwZVBiM2ZEQnRuMG82LzZ0bS04OGFmQl9TNzkxN2lvaTc5",
-      "lm": 1726990518985.4158,
+      "etag": "N2JQNjlvcHRvZl8vZXQybUJzLnM5dDVuZWQxLUE4VTE1RDguLWZTOFBpNWw0aXBhMEJzMXM5",
+      "lm": 1727005235314.8037,
       "compressedPath": ".chronos/static/assets/Poppins-SemiBold-B_fPDAUb.ttf"
    },
    "index.html": {
-      "etag": "MzFlNnguOTlpODduOGg4Ljk4ZDIyN2xtNnQwNw",
-      "lm": 1726990518985.4158,
+      "etag": "MGw3OGgxZDUxeG44bTg5MTY0OTkyaWUuLnQ1NQ",
+      "lm": 1727005235314.8037,
       "compressedPath": ".chronos/static/index.html"
    },
    "assets/Poppins-ExtraBold-W_qeO1XX.ttf": {
-      "etag": "Nm90cDB4WC5uM0JhMjg3cTE5ci1zbFg4UC4xX09zMjdvZHNhV3NwdEVmNnRpOS1lZTg5dDg3Lw",
-      "lm": 1726990518985.4158,
+      "etag": "dDFsbzF0cy45NXN0eGlyX1dPcTctYW41WDRwMXNkdGE4ZW85ZjYuNTlFQjBzUDg4LTIvcFhlMQ",
+      "lm": 1727005235314.8037,
       "compressedPath": ".chronos/static/assets/Poppins-ExtraBold-W_qeO1XX.ttf"
    },
    "assets/Poppins-Regular-CTKNfV9P.ttf": {
-      "etag": "YUtsbnU4MTlwN1QzaTlzLi4ycFBzZTA4LS1DODY2bzI5cmY5OHROVjd0L3NlUmFnUDdmdHM",
-      "lm": 1726990518985.4158,
+      "etag": "c3NLOVIvZjU4bmFQdDFzLTZlbzlnaXIwQ2E1VHA3NTFzVi50LXRmOVBldXAxLk44NGw5Mjg",
+      "lm": 1727005235314.8037,
       "compressedPath": ".chronos/static/assets/Poppins-Regular-CTKNfV9P.ttf"
    },
    "assets/index-D2DnedyB.css": {
-      "etag": "eC1ENzYwOW44czJ5Nzk5RHM4N2VkMS4ydDNlOHNlLzIuc25jNkI4aWRzYQ",
-      "lm": 1726990518985.4158,
+      "etag": "MHM2OURzL0JueWU5czgyYzE3RHhucy4xLmlkNGUtNWRlOXQxYTgyNTU4cw",
+      "lm": 1727005235314.8037,
       "compressedPath": ".chronos/static/assets/index-D2DnedyB.css"
    },
    "vite.svg": {
-      "etag": "NS4yZTAxMXN0dmc5LjJ2aTg2OTA5NTQ3Njg",
-      "lm": 1726990518621.3953,
+      "etag": "NTEyMy5zLjlnMHY5N2U2aTY4MjV0OTEzMXY",
+      "lm": 1727005235030.7983,
       "compressedPath": ".chronos/static/vite.svg"
    },
-   "assets/index-DwqqLz11.js": {
-      "etag": "THhud3NzaXpkMW5zZWR1ZnFlLy1qcS5kc3QxYWVuRGVp",
-      "lm": 1726990518985.4158,
-      "compressedPath": ".chronos/static/assets/index-DwqqLz11.js"
+   "assets/index-DWwDBsqr.js": {
+      "etag": "ZXJkRGVqbnVpeGVkdHNxZGZELlduaUJzLWUvc25zd3Nh",
+      "lm": 1727005235314.8037,
+      "compressedPath": ".chronos/static/assets/index-DWwDBsqr.js"
    }
 }
