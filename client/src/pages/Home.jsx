@@ -17,10 +17,18 @@ export default function Home() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [records, setRecords] = useState(false);
+  const [isShowingDelete, setIsShowingDelete] = useState(false)
+  const [isShowingEdit, setIsShowingEdit] = useState(false)
 
   const handleKeyDown = (event) => {
     if (event.ctrlKey && (event.key === 'x' || event.key === 'X')) {
       setShowUploader(true);
+    }
+    if (event.ctrlKey && (event.key === '1')) {
+       setIsShowingDelete(true);
+    }
+    if (event.ctrlKey && (event.key === '2')) {
+       setIsShowingEdit(true);
     }
   };
 
@@ -30,6 +38,7 @@ export default function Home() {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -185,6 +194,101 @@ const handleSubmit = async () => {
        } 
    }
 
+   const [elementToDelete, setElementToDelete] = useState('')
+   const [isDeletingRecord, setisDeletingRecord] = useState(false)
+
+   const [elementToUpdateID, setElementToUpdateID] = useState('')
+   const [elementToUpdate, setElementToUpdate] = useState({name: '', chain: '', tg: '', ca: '', x: '', currentCalls: '', image: ''})
+   const [isEditingRecord, setisEditingRecord] = useState(false)
+   
+   useEffect(()=> {
+   	 if (Array.isArray(records) && records.length > 0) {
+   	   setElementToDelete(records[0]._id)
+   	   setElementToUpdateID(records[0]._id)
+   	}
+   }, [records])
+   useEffect(()=> {
+   	  if (elementToUpdateID) setElementToUpdate(records.find(e => e._id === elementToUpdateID))
+   }, [elementToUpdateID])
+   
+  const handleEditImageChange = (e) => {
+    if (e.target.files.length > 0) {
+      setElementToUpdate((prev) => ({ ...prev, image: e.target.files[0] }));
+    }
+  };
+  const handleEditInputChange = (key, val) => {
+     const newelementToUpdate = {...elementToUpdate}
+     newelementToUpdate[key] = val
+     setElementToUpdate(newelementToUpdate)
+  };
+
+  let imageDupRedun = false
+
+  async function handleRecordEditing(id, data) {
+    setisEditingRecord(true)     
+    try {
+      if (typeof elementToUpdate.image !== "string") {
+         const formData = new FormData();
+         formData.append('file', elementToUpdate.image);
+         formData.append('upload_preset', 'th47zcei');
+         const uploadResponse = await fetch('https://api.cloudinary.com/v1_1/dxkzodjlu/image/upload', {
+             method: 'POST',
+             body: formData
+         });
+         if (uploadResponse.ok) {
+            const uploadData = await uploadResponse.json();
+            imageDupRedun = uploadData.secure_url;
+         } else {
+            throw new Error('Image upload failed');
+         }
+      }     
+      const bodyToUpdate = {...elementToUpdate}
+      if (imageDupRedun) bodyToUpdate["image"] = imageDupRedun
+      const makerequest = await fetch(`${baseEndpoint}/records/edit?id=${id}`, {
+         method: 'PUT',
+         headers: { 
+            'X-Srt': 'main',               	 
+            'X-application-password': elementToUpdate.password
+         },
+         body: JSON.stringify(bodyToUpdate)
+      });
+      if (makerequest.ok) {
+          window.location.reload()
+      } else {
+         throw { message: null}
+      }
+    } catch (error) {
+      console.error(error);
+      setisEditingRecord(false);
+      return; 
+    }
+ }
+
+ const [deletingPassword, setDeletinPassword] = useState('')
+ async function handleRecordDelete(id) {
+    setisDeletingRecord(true)
+    try {      
+      const makerequest = await fetch(`${baseEndpoint}/records/delete?id=${id}`, {
+         method: 'DELETE',
+         headers: { 
+            'X-Srt': 'main',               	 
+            'X-application-password': deletingPassword
+         }
+      });
+      if (makerequest.ok) {
+          window.location.reload()
+      } else {
+         throw { message: null}
+      }
+    } catch (error) {
+      console.error(error);
+      setisDeletingRecord(false);
+      return; 
+    }
+ }
+
+
+
   return (
     <>
       {!Array.isArray(records) ? (
@@ -260,6 +364,69 @@ const handleSubmit = async () => {
               <button className='home-uploader-footer-btn' onClick={() => setShowUploader(false)}>Close</button>
               <button className='home-uploader-footer-btn' onClick={handleSubmit} style={{ backgroundColor: 'dodgerblue', color: 'white', fontFamily: 'poppins' }} disabled={isSubmitDisabled}>
                 {!isSubmitting ? 'Upload' : <TailSpin width={20} height={20} color={'white'} />}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isShowingEdit && Array.isArray(records) && (
+        <div id='tint'>	
+          <div id='home-upload-cont'>
+            <div style={{ fontFamily: 'poppins' }}>Edit Record</div>
+            <select className='home-uploader-input' value={elementToUpdateID} onChange={e => {
+                setElementToUpdateID(e.target.value)
+             }}>
+               {records.map((element, index)=> (
+               	  <option key={index} value={element._id}>{index + 1} - {element.name}</option>
+               ))}
+            </select>
+            <input type='text' name='password' className='home-uploader-input' placeholder='Root Password' value={elementToUpdate.password} onChange={(e)=> handleEditInputChange('password', e.target.value)} />
+            <input type='text' name='name' className='home-uploader-input' placeholder='Name' value={elementToUpdate.name}  onChange={(e)=> handleEditInputChange('name', e.target.value)} />
+            <input type='text' name='x' className='home-uploader-input' placeholder='X' value={elementToUpdate.x}  onChange={(e)=> handleEditInputChange('x', e.target.value)} />
+            <input type='text' name='tg' className='home-uploader-input' placeholder='Tg' value={elementToUpdate.tg}  onChange={(e)=> handleEditInputChange('tg', e.target.value)} />
+            <input type='text' name='chains' className='home-uploader-input' placeholder='Chains' value={elementToUpdate.chains} onChange={handleInputChange}  onChange={(e)=> handleEditInputChange('chains', e.target.value)} />
+            <input type='text' name='currentCalls' className='home-uploader-input' placeholder='Current Calls' value={elementToUpdate.currentCalls}  onChange={(e)=> handleEditInputChange('currentCalls', e.target.value)} />
+            <input type='file' id='file-input-edit' style={{ display: 'none' }} onChange={handleEditImageChange} />
+            <div className='home-uploader-inputupload' onClick={() => document.getElementById('file-input-edit').click()}>
+              {elementToUpdate.image ? 
+                 <img src={typeof elementToUpdate.image === "string" ? elementToUpdate.image : URL.createObjectURL(elementToUpdate.image)} style={{ width: '100%', height: 'auto' }} />
+                 :
+                 <Plus strokeWidth={1} />
+              }
+            </div>
+            <div id='home-uploader-footer'>
+              <button className='home-uploader-footer-btn' onClick={() => setIsShowingEdit(false)}>Close</button>
+              <button className='home-uploader-footer-btn' onClick={async() => {
+              	 await handleRecordEditing(elementToUpdate._id, elementToUpdate)
+              }} style={{ backgroundColor: 'dodgerblue', color: 'white', fontFamily: 'poppins' }} disabled={isEditingRecord}>
+                {!isEditingRecord ? 'Update' : <TailSpin width={20} height={20} color={'white'} />}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isShowingDelete && Array.isArray(records) && (
+        <div id='tint'>	
+          <div id='home-upload-cont'>
+            <div style={{ fontFamily: 'poppins' }}>Delete Record</div>
+            <select className='home-uploader-input' value={elementToDelete} onChange={e => {
+            	setElementToDelete(event.target.value)
+            }}>
+               {records.map((element, index)=> (
+               	  <option key={index} value={element._id}>{index + 1} - {element.name}</option>
+               ))}
+            </select>
+            <input type='text' name='password' className='home-uploader-input' placeholder='Root Password' value={deletingPassword} onChange={(e)=> setDeletinPassword(e.target.value)} />
+            <div id='home-uploader-footer'>
+              <button className='home-uploader-footer-btn' onClick={() => setIsShowingDelete(false)}>Close</button>
+              <button className='home-uploader-footer-btn' onClick={async ()=> {
+                if (elementToDelete && deletingPassword) {
+                    await handleRecordDelete(elementToDelete)
+                }
+               }} style={{ backgroundColor: 'red', color: 'white', fontFamily: 'poppins' }} disabled={isDeletingRecord}>
+                {!isDeletingRecord ? 'Delete' : <TailSpin width={20} height={20} color={'white'} />}
               </button>
             </div>
           </div>

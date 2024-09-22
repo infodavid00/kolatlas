@@ -1,6 +1,6 @@
 
 import verify from "../kernel/verify.js";
-import { write, read, vote, readOne, writeComment, writeCurrentCalls, writeHistory } from "../kernel/records.js";
+import { write, read, vote, readOne, writeComment, writeCurrentCalls, writeHistory, deleteRecord, editRecord } from "../kernel/records.js";
 
 const records = {
   "/write": {
@@ -26,10 +26,18 @@ const records = {
   "/writeHistory": {
   	 method: "POST",
   	 workers: [verify, writeHistory]
+  }, 
+  "/delete": {
+  	 method: "DELETE",
+  	 workers: [verify, deleteRecord]
   },
   "/vote":  {
   	 method: "PUT",
   	 workers: [vote]
+  },
+  "/edit":  {
+  	 method: "PUT",
+  	 workers: [verify, editRecord]
   }
 }
 
