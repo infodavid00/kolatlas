@@ -19,26 +19,29 @@ export default function Home() {
   const [records, setRecords] = useState(false);
   const [isShowingDelete, setIsShowingDelete] = useState(false)
   const [isShowingEdit, setIsShowingEdit] = useState(false)
-
+  
   const handleKeyDown = (event) => {
-    if (event.ctrlKey && (event.key === 'x' || event.key === 'X')) {
-      setShowUploader(true);
-    }
-    if (event.ctrlKey && (event.key === '1')) {
-       setIsShowingDelete(true);
-    }
-    if (event.ctrlKey && (event.key === '2')) {
-       setIsShowingEdit(true);
-    }
+  if (event.ctrlKey && (event.key === 'x' || event.key === 'X')) {
+    event.preventDefault(); // Prevent default action for Ctrl+X
+    setShowUploader(true);
+  }
+  if (event.ctrlKey && (event.key === '1')) {
+    event.preventDefault(); // Prevent default action for Ctrl+1
+    setIsShowingDelete(true);
+  }
+  if (event.ctrlKey && (event.key === '2')) {
+    event.preventDefault(); // Prevent default action for Ctrl+2
+    setIsShowingEdit(true);
+  }
   };
 
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
-  
+  window.addEventListener('keydown', handleKeyDown);
+  return () => {
+    window.removeEventListener('keydown', handleKeyDown);
+  };
+ }, []);
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
