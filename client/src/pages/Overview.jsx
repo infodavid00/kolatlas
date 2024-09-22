@@ -105,7 +105,7 @@ export default function Overview() {
   const [UCCInputs, setUCCInputs] = useState({
   	 password: '',
   	 token: '',
-  	 chain: '',
+  	 chain: [],
   	 ca: '',
   	 link: '',
   	 doic: '',
@@ -158,7 +158,7 @@ export default function Overview() {
   const [notUCCInputs, setNotUCCInputs] = useState({
   	 password: '',
   	 token: '',
-  	 chain: '',
+  	 chain: [],
   	 ca: '',
   	 link: '',
   	 doic: '',
@@ -379,7 +379,58 @@ const setNotUccElementEditInputs = (key, value) => {
           toast.success('Failed to copy');
       });
   }
-  
+
+
+   const handleChainsUccElementEditInput = (val) => {
+     const newelementToUpdate = {...uccElementEdit}
+     let chain = uccElementEdit.chain
+     const chf = chain.find(e => e.includes(val))
+     if (chf) {
+        chain = chain.filter(e => !e.includes(val))
+     } else {
+     	chain.push(val)
+     }
+     setUccElementEdit({...newelementToUpdate, chain: chain})
+  };
+
+   const handleChainsNotUccElementEditInput = (val) => {
+     const newelementToUpdate = {...notuccElementEdit}
+     let chain = notuccElementEdit.chain
+     const chf = chain.find(e => e.includes(val))
+     if (chf) {
+        chain = chain.filter(e => !e.includes(val))
+     } else {
+     	chain.push(val)
+     }
+     setNotUccElementEdit({...notuccElementEdit, chain: chain})
+  };
+
+
+   const handleChainsUccInput = (val) => {
+     const newelementToUpdate = {...UCCInputs}
+     let chain = UCCInputs.chain
+     const chf = chain.find(e => e.includes(val))
+     if (chf) {
+        chain = chain.filter(e => !e.includes(val))
+     } else {
+     	chain.push(val)
+     }
+     setUCCInputs({...newelementToUpdate, chain: chain})
+  };
+
+   const handleChainsNotUccInput = (val) => {
+     const newelementToUpdate = {...notUCCInputs}
+     let chain = notUCCInputs.chain
+     const chf = chain.find(e => e.includes(val))
+     if (chf) {
+        chain = chain.filter(e => !e.includes(val))
+     } else {
+     	chain.push(val)
+     }
+     setNotUCCInputs({...newelementToUpdate, chain: chain})
+  };
+
+
   
   return (
     <>
@@ -393,7 +444,7 @@ const setNotUccElementEditInputs = (key, value) => {
   	            <div className='oa-metadata-text' style={{ fontFamily: 'poppins' }}>{user.name}</div>
   	            <a className='oa-metadata-text' style={{ color: 'dodgerblue', textDecoration: 'none' }} href={user.x}>{user.x}</a>
   	            <a className='oa-metadata-text' style={{ color: 'dodgerblue', textDecoration: 'none' }} href={user.tg}>{user.tg}</a>
-  	            <div className='oa-metadata-text'>{user.chains}</div>
+  	            <div className='oa-metadata-text'>{(user?.chains ?? []).join(', ')}</div>
   	            <div className='oa-metadata-text'>Score: {user.votes}</div>
   	         </div>
   	       </div>
@@ -418,7 +469,7 @@ const setNotUccElementEditInputs = (key, value) => {
                 {(user?.currentCallsList?.sort((a, b) => new Date(b.date) - new Date(a.date)) ?? []).map((list, index) => (
                   <tr key={index} className='home-table-databody'>
                     <td className='home-table-data'>{list.token}</td>
-                    <td className='home-table-data'>{list.chain}</td>
+                    <td className='home-table-data'>{(list?.chain ?? []).join(', ')}</td>
                     <td className='home-table-data' onClick={()=> copyToClipboard(list.ca)} style={{ cursor: 'pointer', color: 'dodgerblue'}}>
                        {list.ca.slice(0, 3)}...{list.ca.slice(list.ca.length - 3)}</td>
                     <td className='home-table-data'><a href={list.link}>{list.link}</a></td>
@@ -456,7 +507,7 @@ const setNotUccElementEditInputs = (key, value) => {
                 {(user?.history?.sort((a, b) => new Date(b.date) - new Date(a.date)) ?? []).map((list, index) => (
                   <tr key={index} className='home-table-databody'>
                     <td className='home-table-data'>{list.token}</td>
-                    <td className='home-table-data'>{list.chain}</td>
+                    <td className='home-table-data'>{(list?.chain ?? []).join(', ')}</td>
                     <td className='home-table-data' onClick={()=> copyToClipboard(list.ca)} style={{ cursor: 'pointer', color: 'dodgerblue'}}>
                        {list.ca.slice(0, 3)}...{list.ca.slice(list.ca.length - 3)}</td>
                     <td className='home-table-data'><a href={list.link}>{list.link}</a></td>
@@ -524,7 +575,27 @@ const setNotUccElementEditInputs = (key, value) => {
   	           <>
   	            <input type='text' name='name' value={UCCInputs.password} onChange={e => setUUCInputs('password', e.target.value)} className='home-uploader-input' placeholder='Password' />
   	            <input type='text' name='name' value={UCCInputs.token} onChange={e => setUUCInputs('token', e.target.value)} className='home-uploader-input' placeholder='Token' />
-  	            <input type='text' name='name' value={UCCInputs.chain} onChange={e => setUUCInputs('chain', e.target.value)} className='home-uploader-input' placeholder='Chain' />
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '1em'}}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>ETH</span> 
+                  <input type='checkbox' checked={UCCInputs.chain.includes('ETH')}
+                      onChange={() => handleChainsUccInput('ETH')} /></div>
+                      
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>BTC</span> 
+                   <input type='checkbox' checked={UCCInputs.chain.includes('BTC')}
+                      onChange={() =>  handleChainsUccInput('BTC') } /></div>
+                      
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>SOL</span> 
+                   <input type='checkbox' checked={UCCInputs.chain.includes('SOL')}
+                      onChange={() => handleChainsUccInput('SOL') } /></div>  
+                                          
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>BNB</span> 
+                   <input type='checkbox' checked={UCCInputs.chain.includes('BNB')}
+                      onChange={() => handleChainsUccInput('BNB') } /></div>
+                      
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>OTHERS</span> 
+                   <input type='checkbox'checked={UCCInputs.chain.includes('OTHERS')}
+                       onChange={() => handleChainsUccInput('OTHERS') } /></div>
+                </div> 
   	            <input type='text' name='name' value={UCCInputs.ca} onChange={e => setUUCInputs('ca', e.target.value)} className='home-uploader-input' placeholder='CA' />
   	            <input type='text' name='name' value={UCCInputs.link} onChange={e => setUUCInputs('link', e.target.value)} className='home-uploader-input' placeholder='Link' />
   	            <input type='text' name='name' value={UCCInputs.doic} onChange={e => setUUCInputs('doic', e.target.value)} className='home-uploader-input' placeholder='Date of Initial Call' />
@@ -541,7 +612,28 @@ const setNotUccElementEditInputs = (key, value) => {
   	          <>
   	            <input type='text' name='name' value={notUCCInputs.password} onChange={e => setNotUUCInputs('password', e.target.value)} className='home-uploader-input' placeholder='Password' />
   	            <input type='text' name='name' value={notUCCInputs.token} onChange={e => setNotUUCInputs('token', e.target.value)} className='home-uploader-input' placeholder='Token' />
-  	            <input type='text' name='name' value={notUCCInputs.chain} onChange={e => setNotUUCInputs('chain', e.target.value)} className='home-uploader-input' placeholder='Chain' />
+
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '1em'}}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>ETH</span> 
+                  <input type='checkbox' checked={notUCCInputs.chain.includes('ETH')}
+                      onChange={() => handleChainsNotUccInput('ETH')} /></div>
+                      
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>BTC</span> 
+                   <input type='checkbox' checked={notUCCInputs.chain.includes('BTC')}
+                      onChange={() =>  handleChainsNotUccInput('BTC') } /></div>
+                      
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>SOL</span> 
+                   <input type='checkbox' checked={notUCCInputs.chain.includes('SOL')}
+                      onChange={() => handleChainsNotUccInput('SOL') } /></div>  
+                                          
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>BNB</span> 
+                   <input type='checkbox' checked={notUCCInputs.chain.includes('BNB')}
+                      onChange={() => handleChainsNotUccInput('BNB') } /></div>
+                      
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>OTHERS</span> 
+                   <input type='checkbox'checked={notUCCInputs.chain.includes('OTHERS')}
+                       onChange={() => handleChainsNotUccInput('OTHERS') } /></div>
+                </div> 
   	            <input type='text' name='name' value={notUCCInputs.ca} onChange={e => setNotUUCInputs('ca', e.target.value)} className='home-uploader-input' placeholder='CA' />
   	            <input type='text' name='name' value={notUCCInputs.link} onChange={e => setNotUUCInputs('link', e.target.value)} className='home-uploader-input' placeholder='Link' />
   	            <input type='text' name='name' value={notUCCInputs.doic} onChange={e => setNotUUCInputs('doic', e.target.value)} className='home-uploader-input' placeholder='Date of Initial Call' />
@@ -590,7 +682,27 @@ const setNotUccElementEditInputs = (key, value) => {
                </select>
   	            <input type='text' name='name' value={editPassword} onChange={e => setEditPassword(e.target.value)} className='home-uploader-input' placeholder='Password' />
   	            <input type='text' name='name' value={uccElementEdit.token} onChange={e => setUccElementEditInputs('token', e.target.value)} className='home-uploader-input' placeholder='Token' />
-  	            <input type='text' name='name' value={uccElementEdit.chain} onChange={e => setUccElementEditInputs('chain', e.target.value)} className='home-uploader-input' placeholder='Chain' />
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '1em'}}>                
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>ETH</span> 
+                  <input type='checkbox' checked={uccElementEdit.chain.includes('ETH')}
+                      onChange={() => handleChainsUccElementEditInput('ETH')} /></div>
+                      
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>BTC</span> 
+                   <input type='checkbox' checked={uccElementEdit.chain.includes('BTC')}
+                      onChange={() =>  handleChainsUccElementEditInput('BTC') } /></div>
+                      
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>SOL</span> 
+                   <input type='checkbox' checked={uccElementEdit.chain.includes('SOL')}
+                      onChange={() => handleChainsUccElementEditInput('SOL') } /></div>  
+                                          
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>BNB</span> 
+                   <input type='checkbox' checked={uccElementEdit.chain.includes('BNB')}
+                      onChange={() => handleChainsUccElementEditInput('BNB') } /></div>
+                      
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>OTHERS</span> 
+                   <input type='checkbox'checked={uccElementEdit.chain.includes('OTHERS')}
+                       onChange={() => handleChainsUccElementEditInput('OTHERS') } /></div>
+                </div> 
   	            <input type='text' name='name' value={uccElementEdit.ca} onChange={e => setUccElementEditInputs('ca', e.target.value)} className='home-uploader-input' placeholder='CA' />
   	            <input type='text' name='name' value={uccElementEdit.link} onChange={e => setUccElementEditInputs('link', e.target.value)} className='home-uploader-input' placeholder='Link' />
   	            <input type='text' name='name' value={uccElementEdit.doic} onChange={e => setUccElementEditInputs('doic', e.target.value)} className='home-uploader-input' placeholder='Date of Initial Call' />
@@ -617,7 +729,29 @@ const setNotUccElementEditInputs = (key, value) => {
                 </select>
   	            <input type='text' name='name' value={editPassword} onChange={e => setEditPassword(e.target.value)} className='home-uploader-input' placeholder='Password' />
   	            <input type='text' name='name' value={notuccElementEdit.token} onChange={e => setNotUccElementEditInputs('token', e.target.value)} className='home-uploader-input' placeholder='Token' />
-  	            <input type='text' name='name' value={notuccElementEdit.chain} onChange={e => setNotUccElementEditInputs('chain', e.target.value)} className='home-uploader-input' placeholder='Chain' />
+
+
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '1em'}}>                
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>ETH</span> 
+                  <input type='checkbox' checked={notuccElementEdit.chain.includes('ETH')}
+                      onChange={() => handleChainsNotUccElementEditInput('ETH')} /></div>
+                      
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>BTC</span> 
+                   <input type='checkbox' checked={notuccElementEdit.chain.includes('BTC')}
+                      onChange={() =>  handleChainsNotUccElementEditInput('BTC') } /></div>
+                      
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>SOL</span> 
+                   <input type='checkbox' checked={notuccElementEdit.chain.includes('SOL')}
+                      onChange={() => handleChainsNotUccElementEditInput('SOL') } /></div>  
+                                          
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>BNB</span> 
+                   <input type='checkbox' checked={notuccElementEdit.chain.includes('BNB')}
+                      onChange={() => handleChainsNotUccElementEditInput('BNB') } /></div>
+                      
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>OTHERS</span> 
+                   <input type='checkbox'checked={notuccElementEdit.chain.includes('OTHERS')}
+                       onChange={() => handleChainsNotUccElementEditInput('OTHERS') } /></div>
+                </div> 
   	            <input type='text' name='name' value={notuccElementEdit.ca} onChange={e => setNotUccElementEditInputs('ca', e.target.value)} className='home-uploader-input' placeholder='CA' />
   	            <input type='text' name='name' value={notuccElementEdit.link} onChange={e => setNotUccElementEditInputs('link', e.target.value)} className='home-uploader-input' placeholder='Link' />
   	            <input type='text' name='name' value={notuccElementEdit.doic} onChange={e => setNotUccElementEditInputs('doic', e.target.value)} className='home-uploader-input' placeholder='Date of Initial Call' />

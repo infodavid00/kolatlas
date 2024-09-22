@@ -11,7 +11,7 @@ export default function Home() {
     name: '',
     x: '',
     tg: '',
-    chains: '',
+    chains: [],
     currentCalls: '',
     image: null
   });
@@ -19,13 +19,6 @@ export default function Home() {
   const [records, setRecords] = useState(false);
   const [isShowingDelete, setIsShowingDelete] = useState(false)
   const [isShowingEdit, setIsShowingEdit] = useState(false)
-
-  const [isEthChecked, setIsEthChecked] = useState(false);
-  const [isBtcChecked, setIsBtcChecked] = useState(false);
-  const [isBnbChecked, setIsBnbChecked] = useState(false);
-  const [isSolChecked, setIsSolChecked] = useState(false);
-  const [isOthersChecked, setIsOthersChecked] = useState(false);
-
   
   const handleKeyDown = (event) => {
   if (event.ctrlKey && (event.key === 'x' || event.key === 'X')) {
@@ -218,7 +211,9 @@ const handleSubmit = async () => {
    	}
    }, [records])
    useEffect(()=> {
-   	  if (elementToUpdateID) setElementToUpdate(records.find(e => e._id === elementToUpdateID))
+   	  if (elementToUpdateID) {
+   	      setElementToUpdate(records.find(e => e._id === elementToUpdateID))
+   	  }
    }, [elementToUpdateID])
    
   const handleEditImageChange = (e) => {
@@ -229,6 +224,30 @@ const handleSubmit = async () => {
   const handleEditInputChange = (key, val) => {
      const newelementToUpdate = {...elementToUpdate}
      newelementToUpdate[key] = val
+     setElementToUpdate(newelementToUpdate)
+  };
+  const handleChainsInputChange = (val) => {
+     const elementToAdd = {...inputs}
+     let chains = elementToAdd.chains
+     const chf = chains.find(e => e.includes(val))
+     if (chf) {
+        chains = chains.filter(e => !e.includes(val))
+     } else {
+     	chains.push(val)
+     }
+     elementToAdd["chains"] = chains
+     setInputs(elementToAdd)
+  };
+  const handleChainsEditInputChange = (val) => {
+     const newelementToUpdate = {...elementToUpdate}
+     let chains = newelementToUpdate.chains
+     const chf = chains.find(e => e.includes(val))
+     if (chf) {
+        chains = chains.filter(e => !e.includes(val))
+     } else {
+     	chains.push(val)
+     }
+     newelementToUpdate["chains"] = chains
      setElementToUpdate(newelementToUpdate)
   };
 
@@ -254,6 +273,7 @@ const handleSubmit = async () => {
       }     
       const bodyToUpdate = {...elementToUpdate}
       if (imageDupRedun) bodyToUpdate["image"] = imageDupRedun
+     
       const makerequest = await fetch(`${baseEndpoint}/records/edit?id=${id}`, {
          method: 'PUT',
          headers: { 
@@ -298,7 +318,6 @@ const handleSubmit = async () => {
  }
 
 
-
   return (
     <>
       {!Array.isArray(records) ? (
@@ -339,8 +358,8 @@ const handleSubmit = async () => {
                     <td className='home-table-data' onClick={()=> window.location.href = '/overview/'+ list._id} style={{ cursor: 'pointer'}}><img className='home-table-data-profile' src={list?.image} /></td>
                     <td className='home-table-data' onClick={()=> window.location.href = '/overview/'+ list._id} style={{ cursor: 'pointer'}}>{list?.name}</td>
                     <td className='home-table-data'><a href={list?.x}>{list?.x}</a></td>
-                    <td className='home-table-data'><a href={list?.tg}>{list?.tg}</a></td>
-                    <td className='home-table-data'>{list?.chains}</td>
+                    <td className='home-table-data'><a href={list?.tg}>{list?.tg}</a></td>                    
+                    <td className='home-table-data'>{(list?.chains ?? []).join(', ')}</td>
                     <td className='home-table-data'><a href={list?.currentCalls}>{list?.currentCalls}</a></td>
                   </tr>
                 ))}
@@ -361,7 +380,28 @@ const handleSubmit = async () => {
             <input type='text' name='name' className='home-uploader-input' placeholder='Name' value={inputs.name} onChange={handleInputChange} />
             <input type='text' name='x' className='home-uploader-input' placeholder='X' value={inputs.x} onChange={handleInputChange} />
             <input type='text' name='tg' className='home-uploader-input' placeholder='Tg' value={inputs.tg} onChange={handleInputChange} />
-            <input type='text' name='chains' className='home-uploader-input' placeholder='Chains' value={inputs.chains} onChange={handleInputChange} />
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '1em'}}>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>ETH</span> 
+                  <input type='checkbox' checked={inputs.chains.includes('ETH')}
+                      onChange={() => handleChainsInputChange('ETH')} /></div>
+                      
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>BTC</span> 
+                   <input type='checkbox' checked={inputs.chains.includes('BTC')}
+                      onChange={() =>  handleChainsInputChange('BTC') } /></div>
+                      
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>SOL</span> 
+                   <input type='checkbox' checked={inputs.chains.includes('SOL')}
+                      onChange={() => handleChainsInputChange('SOL') } /></div>  
+                                          
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>BNB</span> 
+                   <input type='checkbox' checked={inputs.chains.includes('BNB')}
+                      onChange={() => handleChainsInputChange('BNB') } /></div>
+                      
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>OTHERS</span> 
+                   <input type='checkbox'checked={inputs.chains.includes('OTHERS')}
+                       onChange={() => handleChainsInputChange('OTHERS') } /></div>
+            </div>
             <input type='text' name='currentCalls' className='home-uploader-input' placeholder='Current Calls' value={inputs.currentCalls} onChange={handleInputChange} />
             <input type='file' id='file-input' style={{ display: 'none' }} onChange={handleImageChange} />
             <div className='home-uploader-inputupload' onClick={() => document.getElementById('file-input').click()}>
@@ -395,22 +435,25 @@ const handleSubmit = async () => {
             <input type='text' name='tg' className='home-uploader-input' placeholder='Tg' value={elementToUpdate.tg}  onChange={(e)=> handleEditInputChange('tg', e.target.value)} />
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '1em'}}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>ETH</span> 
-                  <input type='checkbox' checked={isEthChecked}
-                      onChange={(e) => setIsEthChecked(e.target.checked)} /></div>
+                  <input type='checkbox' checked={elementToUpdate.chains.includes('ETH')}
+                      onChange={() => handleChainsEditInputChange('ETH')} /></div>
+                      
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>BTC</span> 
-                   <input type='checkbox' checked={isBtcChecked}
-                      onChange={(e) => setIsBtcChecked(e.target.checked)} /></div>
+                   <input type='checkbox' checked={elementToUpdate.chains.includes('BTC')}
+                      onChange={() =>  handleChainsEditInputChange('BTC') } /></div>
+                      
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>SOL</span> 
-                   <input type='checkbox' checked={isSolChecked}
-                      onChange={(e) => setIsSolChecked(e.target.checked)} /></div>
+                   <input type='checkbox' checked={elementToUpdate.chains.includes('SOL')}
+                      onChange={() => handleChainsEditInputChange('SOL') } /></div>  
+                                          
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>BNB</span> 
-                   <input type='checkbox' checked={isBnbChecked}
-                      onChange={(e) => setIsBnbChecked(e.target.checked)} /></div>
+                   <input type='checkbox' checked={elementToUpdate.chains.includes('BNB')}
+                      onChange={() => handleChainsEditInputChange('BNB') } /></div>
+                      
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}><span>OTHERS</span> 
-                   <input type='checkbox' checked={isOthersChecked}
-                      onChange={(e) => setIsOthersChecked(e.target.checked)} /></div>
+                   <input type='checkbox'checked={elementToUpdate.chains.includes('OTHERS')}
+                       onChange={() => handleChainsEditInputChange('OTHERS') } /></div>
             </div>
-            <input type='text' name='chains' className='home-uploader-input' placeholder='Chains' value={elementToUpdate.chains} onChange={handleInputChange}  onChange={(e)=> handleEditInputChange('chains', e.target.value)} />
             <input type='text' name='currentCalls' className='home-uploader-input' placeholder='Current Calls' value={elementToUpdate.currentCalls}  onChange={(e)=> handleEditInputChange('currentCalls', e.target.value)} />
             <input type='file' id='file-input-edit' style={{ display: 'none' }} onChange={handleEditImageChange} />
             <div className='home-uploader-inputupload' onClick={() => document.getElementById('file-input-edit').click()}>

@@ -71,6 +71,14 @@ body::-webkit-scrollbar-thumb {
   background-color: rgba(254, 254, 254, 0.7);
   backdrop-filter: blur(8px);
   z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
+#header img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50px;	
 }
 #header-logo {
   font-family: poppins-bold, sans-serif;
