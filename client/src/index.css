@@ -73,6 +73,7 @@ body::-webkit-scrollbar-thumb {
   z-index: 1;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 1em;
 }
 #header img {
@@ -84,6 +85,12 @@ body::-webkit-scrollbar-thumb {
   font-family: poppins-bold, sans-serif;
   color: var(--color);
   text-decoration: none;
+}
+.header-link {
+  font-size: 14px;
+  color: rgba(10,10,10,1);
+  text-decoration: none; 
+  font-family: poppins, sans-serif;
 }
 
 

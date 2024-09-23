@@ -17,6 +17,8 @@ application.use("/records", records);
 
 await db(process.env.DBKEY).connect();
 
+// application.listen(8080, ()=> console.log("server started on :8080"));
+
 export const api = onRequest((request, response) => {
   application(request, response);
 });
