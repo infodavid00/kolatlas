@@ -505,7 +505,7 @@ const setNotUccElementEditInputs = (key, value) => {
                   <th>1d performance</th>
                   <th>1w performance</th>
                   <th>1m performance</th>
-                  <th>% Performance</th>
+                  {/*<th>% Performance</th>*/}
                 </tr>
               </thead>                         
               <tbody>
@@ -522,8 +522,9 @@ const setNotUccElementEditInputs = (key, value) => {
                     <td className='home-table-data'>{list.fdperf}%</td>
                     <td className='home-table-data'>{list.fwperf}%</td>
                     <td className='home-table-data'>{list.fmperf}%</td>
-                    <td className='home-table-data'>
+                    {/*<td className='home-table-data'>
                        {((Number(list.cc) / Number(list.pac)) - 1).toFixed(2) }%</td>
+                    */}
                   </tr>
                 ))}
               </tbody>
