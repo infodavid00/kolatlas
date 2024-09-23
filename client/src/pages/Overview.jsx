@@ -270,7 +270,9 @@ const setNotUccElementEditInputs = (key, value) => {
          method: 'PUT',
          headers: { 
             'X-Srt': 'main',               	 
-            'X-application-password': editPassword
+            'X-application-password': editPassword,
+            'Content-Type': 'application/json',
+            
          },
          body: JSON.stringify(ccl)
       });
@@ -296,7 +298,8 @@ const setNotUccElementEditInputs = (key, value) => {
          method: 'PUT',
          headers: { 
             'X-Srt': 'main',               	 
-            'X-application-password': editPassword
+            'X-application-password': editPassword,
+            'Content-Type': 'application/json',
          },
          body: JSON.stringify(ch)
       });
@@ -330,7 +333,8 @@ const setNotUccElementEditInputs = (key, value) => {
          method: 'PUT',
          headers: { 
             'X-Srt': 'main',               	 
-            'X-application-password': editPassword
+            'X-application-password': editPassword,
+            'Content-Type': 'application/json',
          },
          body: JSON.stringify(newOne)
       });
@@ -356,7 +360,8 @@ const setNotUccElementEditInputs = (key, value) => {
          method: 'PUT',
          headers: { 
             'X-Srt': 'main',               	 
-            'X-application-password': editPassword
+            'X-application-password': editPassword,
+            'Content-Type': 'application/json',
          },
          body: JSON.stringify(newOne)
       });

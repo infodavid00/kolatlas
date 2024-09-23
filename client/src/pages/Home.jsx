@@ -278,7 +278,8 @@ const handleSubmit = async () => {
          method: 'PUT',
          headers: { 
             'X-Srt': 'main',               	 
-            'X-application-password': elementToUpdate.password
+            'X-application-password': elementToUpdate.password,
+            'Content-Type': 'application/json',
          },
          body: JSON.stringify(bodyToUpdate)
       });
@@ -302,7 +303,8 @@ const handleSubmit = async () => {
          method: 'DELETE',
          headers: { 
             'X-Srt': 'main',               	 
-            'X-application-password': deletingPassword
+            'X-application-password': deletingPassword,
+            'Content-Type': 'application/json',
          }
       });
       if (makerequest.ok) {
