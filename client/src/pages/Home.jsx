@@ -86,6 +86,8 @@ const handleSubmit = async () => {
     }
 
     // Step 3: Submit form data including image URL
+    const inp = {...inputs}
+    delete inp["password"]
     try {
       const response = await fetch(`${baseEndpoint}/records/write`, {
         method: 'POST',
@@ -94,7 +96,7 @@ const handleSubmit = async () => {
           'X-Srt': 'main',
           'X-application-password': password
         },
-        body: JSON.stringify({ ...inputs, image: imageUrl, date: new Date() }) // Include the image URL
+        body: JSON.stringify({ ...inp, image: imageUrl, date: new Date() }) // Include the image URL
       });
 
       if (response.ok) {
