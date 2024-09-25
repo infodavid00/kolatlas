@@ -20,7 +20,7 @@ export default function Header() {
       <div style={{ display: 'flex', alignItems: 'center', gap: '1.5em' }}>
         <Link className='header-link'  style={{
       		color: active === '/' ? 'dodgerblue' : 'rgba(10,10,10,1)'
-        }} to='/'>Home</Link>
+        }} to='/'>KOLs</Link>
         <Link className='header-link' style={{
         	color: active === '/tokens' ? 'dodgerblue' : 'rgba(10,10,10,1)'
         }} to='/tokens'>Tokens</Link>

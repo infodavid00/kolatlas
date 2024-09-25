@@ -94,8 +94,25 @@ body::-webkit-scrollbar-thumb {
 }
 
 
-#home-table-cont { 
+#home-sort {
   margin-top: 4em; 
+  display: flex;
+  gap: 0.6em;
+  alignItems: center;
+  justify-content: flex-end;
+}
+#home-sort div {
+  font-family: poppins;
+  font-size: 14px;
+  padding: 0.4em 0em;
+}
+#home-sort select {
+  border: none;
+  font-family: poppins;
+  background-color: #eee;
+  padding: 0.4em 1em;
+}
+#home-table-cont { 
   overflow-x: auto; 
 } 
 #home-table { 

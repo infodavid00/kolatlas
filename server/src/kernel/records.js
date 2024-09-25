@@ -23,6 +23,7 @@ export async function read(request, response) {
       projection.currentCalls = 1;
       projection.votes = 1;
       projection.image = 1;
+      projection.date = 1;
     }
     const data = await db().target("records").find({}, { projection })
       .skip(page).limit(size).sort({ date: -1 }).toArray();
@@ -56,21 +57,11 @@ export async function writeComment(request, response) {
   }
 }
 
-export async function writeCurrentCalls(request, response) {
-  try {
-    await db().target("records").updateOne({ _id: new ObjectId(request.query.id) }, {
-      $push: { currentCallsList: request.body }
-    });
-    response.status(200).json({ ack: true });
-  } catch (error) {
-    response.status(500).json({ ack: false, message: error.message });
-  }
-}
 
-export async function writeHistory(request, response) {
+export async function writeCalls(request, response) {
   try {
     await db().target("records").updateOne({ _id: new ObjectId(request.query.id) }, {
-      $push: { history: request.body }
+      $push: { calls: request.body }
     });
     response.status(200).json({ ack: true });
   } catch (error) {
@@ -98,8 +89,7 @@ export async function editRecord(request, response) {
     if (body.chains) recordToUpdate.chains = body.chains;
     if (body.currentCalls) recordToUpdate.currentCalls = body.currentCalls;
     if (body.image) recordToUpdate.image = body.image;
-    if (body.currentCallsList) recordToUpdate.currentCallsList = body.currentCallsList;
-    if (body.history) recordToUpdate.history = body.history;
+    if (body.calls) recordToUpdate.calls = body.calls;
 
     await db().target("records").updateOne({ _id: new ObjectId(request.query.id) }, { $set: { ...recordToUpdate } });
     response.status(200).json({ ack: true });

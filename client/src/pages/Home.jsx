@@ -321,6 +321,28 @@ const handleSubmit = async () => {
     }
  }
 
+ const [currentTableLink, setCurrentTableLink] = useState('x')
+ const [sortBy, setSortBy] = useState('1')
+
+ useEffect(() => {
+    if (Array.isArray(records)) {
+        let sortedRecords;
+        if (sortBy === '1') {
+            sortedRecords = [...records].sort((a, b) => new Date(b.date) - new Date(a.date));
+        } else if (sortBy === '2') {
+            sortedRecords = [...records].sort((a, b) => b.votes - a.votes);
+        } else if (sortBy === '3') {
+            sortedRecords = [...records].sort((a, b) => a.name.localeCompare(b.name));
+        } else if (sortBy === '4') {
+            sortedRecords = [...records].sort((a, b) => new Date(a.date) - new Date(b.date));
+        } else {
+            sortedRecords = records;
+        }
+        setRecords(sortedRecords);
+    }
+  }, [sortBy]);
+
+
 
   return (
     <>
@@ -329,17 +351,40 @@ const handleSubmit = async () => {
           <TailSpin width={20} height={20} color={'blue'} />
         </div>
       ) : (
-        <div>
+        <>
+        <div id='home-sort'> 
+           <div>Sort</div>
+           <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+             <option value='1'>Newest - Oldest</option>
+             <option value='2'>Votes</option>
+             <option value='3'>A-z</option>
+             <option value='4'>Oldest - Newest</option>
+           </select>
+        </div>
+        
+        <div style={{ marginTop: '1em'}}>
           <div id='home-table-cont'>
             <table id='home-table'>
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Votes</th>
                   <th>Pfp</th>
                   <th>Name</th>
-                  <th>X</th>
-                  <th>TG</th>
+                  <th>
+                     <select  
+                        style={{
+                            backgroundColor: 'transparent', 
+                            border: 'none', 
+                            fontFamily: 'poppins', 
+                            color: 'rgba(5, 5, 5, 0.75)'
+                        }}
+                        value={currentTableLink} onChange={e => {
+                        setCurrentTableLink(event.target.value)
+                       }}>
+                       <option value={'x'}>Twitter</option>
+                       <option value={'tg'}>Telegram</option>
+                     </select>
+                  </th>
                   <th>Chains</th>
                   <th>Current Calls</th>
                 </tr>
@@ -347,7 +392,6 @@ const handleSubmit = async () => {
               <tbody>
                 {records.map((list, index) => (
                   <tr key={index} className='home-table-databody'>
-                    <td className='home-table-data'>{index + 1}</td>
                     <td className='home-table-data'>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 0, alignItems: 'center', width: '2.3em', opacity: hasVoted(list._id) ? 0.5 : 1  }}>
                         <ArrowUp width={20} fill={'rgba(105, 105, 105, 0.7)'} onClick={async ()=> {
@@ -361,10 +405,11 @@ const handleSubmit = async () => {
                     </td>
                     <td className='home-table-data' onClick={()=> window.location.href = '/overview/'+ list._id} style={{ cursor: 'pointer'}}><img className='home-table-data-profile' src={list?.image} /></td>
                     <td className='home-table-data' onClick={()=> window.location.href = '/overview/'+ list._id} style={{ cursor: 'pointer'}}>{list?.name}</td>
-                    <td className='home-table-data'><a href={list?.x}>{list?.x}</a></td>
-                    <td className='home-table-data'><a href={list?.tg}>{list?.tg}</a></td>                    
+
+                    <td className='home-table-data'><a href={currentTableLink === 'x' ? list?.x : list?.tg} target='_blank'>{currentTableLink === 'x' ? list?.x : list?.tg}</a></td>
+                                     
                     <td className='home-table-data'>{(list?.chains ?? []).join(', ')}</td>
-                    <td className='home-table-data'><a href={list?.currentCalls}>{list?.currentCalls}</a></td>
+                    <td className='home-table-data'>{list?.currentCalls}</td>
                   </tr>
                 ))}
               </tbody>
@@ -374,6 +419,7 @@ const handleSubmit = async () => {
              if (!lockGet) await fetchRecords()
           }}>Load more</button>
         </div>
+        </>
       )}
 
       {showUploader && (

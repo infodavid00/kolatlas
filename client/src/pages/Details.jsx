@@ -72,7 +72,7 @@ export default function Details() {
   	 password: '',
   	 kol: '',
   	 ic: '',
-  	 notes: '',
+  	 price: '',
   	 dd: '',
   	 date: new Date()
   })
@@ -86,7 +86,7 @@ export default function Details() {
   	if (UCCInputs.password && 
   	   UCCInputs.kol && 
   	   UCCInputs.ic && 
-  	   UCCInputs.notes && 
+  	   UCCInputs.price && 
   	   UCCInputs.dd) {
   	      setOnSubmitUCC(true)
   	      const UCCinputTosumbit = {...UCCInputs}
@@ -174,9 +174,9 @@ const setUccElementEditInputs = (key, value) => {
   const [isDeletingActivity, setisDeletingHistory] = useState(false)
   async function handleActivityDelete() {
      const newOne = { activity:
-        user.activity.filter((e, index) => index  !==  uccElementDeleteIndex) 
-     }
-     setisDeletingHistory(true)    
+        user.activity.filter((e, index) => index  !==  Number(uccElementDeleteIndex))
+      }
+     setisDeletingHistory(true)
   	 try {    
       const makerequest = await fetch(`${baseEndpoint}/tokens/edit?id=${id}`, {
          method: 'PUT',
@@ -196,8 +196,41 @@ const setUccElementEditInputs = (key, value) => {
       console.error(error);
       setisDeletingHistory(false);
       return; 
-     }
+     } 
   }
+
+   function formatDateTime(dateString) {
+        const date = new Date(dateString);
+
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const day = String(date.getDate()).padStart(2, '0');
+        const year = String(date.getFullYear()).slice(-2); // Get last 2 digits of the year
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+
+        return `${month}/${day}/${year} ${hours}:${minutes}`;
+    }
+
+  const [sortBy, setSortBy] = useState('1')
+  const [sortedActivity, setSortedActivity] = useState([]);
+
+
+  useEffect(() => {
+    if (Array.isArray(user?.activity)) {
+      let activityCopy = [...user.activity]; // Create a copy to avoid mutation
+
+      if (sortBy === '1') {
+        activityCopy.sort((a, b) => new Date(b.dd) - new Date(a.dd));
+      } else if (sortBy === '2') {
+        activityCopy.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+      } else if (sortBy === '3') {
+        activityCopy.sort((a, b) => new Date(a.dd) - new Date(b.dd));
+      }
+
+      setSortedActivity(activityCopy);
+    }
+  }, [sortBy, user]);
+  
 
 
   return (
@@ -209,37 +242,46 @@ const setUccElementEditInputs = (key, value) => {
   	       <div id='oa-metadata'>  
   	         <img id='oa-metadata-profile' src={user.image} />
   	         <div>  
-  	            <div className='oa-metadata-text' >Name: {user.name}</div>
-  	            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4em'}}>X:<a className='oa-metadata-text' style={{ color: 'dodgerblue', textDecoration: 'none' }} href={user.x}>{user.x}</a></div>
+  	            <div className='oa-metadata-text'><span style={{ fontFamily: 'poppins'}}>Name:</span> {user.name}</div>
+  	            {/*<div style={{ display: 'flex', alignItems: 'center', gap: '0.4em'}}>X:<a className='oa-metadata-text' style={{ color: 'dodgerblue', textDecoration: 'none' }} href={user.x}>{user.x}</a></div>
   	            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4em'}}>Telegram: <a className='oa-metadata-text' style={{ color: 'dodgerblue', textDecoration: 'none' }} href={user.tg}>{user.tg}</a></div>
   	            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4em'}}>Website: <a className='oa-metadata-text' style={{ color: 'dodgerblue', textDecoration: 'none' }} href={user.website}>{user.website}</a></div>
-  	            <div className='oa-metadata-text'>{(user?.chain ?? []).join(', ')}</div>
+                 */}
+  	            <div className='oa-metadata-text'><span style={{ fontFamily: 'poppins'}}>Chain:</span> {(user?.chain ?? []).join(', ')}</div>
   	         </div>
   	       </div>
            <br />
-  	       <div className='overview-header'>KOL Activity</div>
+  	       <div className='overview-header' style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+  	          <div>KOL Activity</div>
+              <div id='home-sort' style={{ marginTop: '0'}}> 
+                 <div>Sort</div>
+                 <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                   <option value='1'>Newest - Oldest</option>
+                   <option value='2'>Price</option>
+                   <option value='3'>Oldest - Newest</option>
+                </select>
+              </div>              
+  	       </div>
 
            <div id='table-patcher'>
   	       <table id='home-table'>
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Date</th>
                   <th>KOL</th>
                   <th>Initial Call (Y/N)</th>
-                  <th>Notes</th>
+                  <th>Price</th>
                 </tr>
               </thead>                         
               <tbody>
-                {(user?.activity?.sort((a, b) => new Date(b.date) - new Date(a.date)) ?? []).map((list, index) => (
+               {sortedActivity.map((list, index) => (
                   <tr key={index} className='home-table-databody' style={{ backgroundColor : list.ic === 'Y' ? '#f1f1f1' : '', borderTop: list.ic === 'Y' ? '1px solid #ccc' : '' }}>
-                    <td className='home-table-data'>{index + 1}</td>
-                    <td className='home-table-data'>{list.dd}</td>
+                    <td className='home-table-data'>{formatDateTime(list.dd)}</td>
                     <td className='home-table-data'>{list.kol}</td>
                     <td className='home-table-data'>{list.ic}</td>
-                    <td className='home-table-data'>{list.notes}</td>
+                    <td className='home-table-data'>{list.price}</td>
                   </tr>
-                ))}
+               ))}
               </tbody>
             </table>
             </div>
@@ -262,8 +304,9 @@ const setUccElementEditInputs = (key, value) => {
   	            <input type='text' name='password' value={UCCInputs.password} onChange={e => setUUCInputs('password', e.target.value)} className='home-uploader-input' placeholder='Password' />
   	            <input type='text' name='kol' value={UCCInputs.kol} onChange={e => setUUCInputs('kol', e.target.value)} className='home-uploader-input' placeholder='KOL' />
   	            <input type='text' name='ic' value={UCCInputs.ic} onChange={e => setUUCInputs('ic', e.target.value)} className='home-uploader-input' placeholder='Initial Value (Y/N)' />
-  	            <input type='text' name='notes' value={UCCInputs.notes} onChange={e => setUUCInputs('notes', e.target.value)} className='home-uploader-input' placeholder='Notes' />
-  	            <input type='text' name='dd' value={UCCInputs.dd} onChange={e => setUUCInputs('dd', e.target.value)} className='home-uploader-input' placeholder='Date' />
+  	            <input type='text' name='price' value={UCCInputs.price} onChange={e => setUUCInputs('price', e.target.value)} className='home-uploader-input' placeholder='price' />
+
+                <input type='datetime-local' id='dd' name='dd' value={UCCInputs.dd}  onChange={e => setUUCInputs('dd', e.target.value)} className='home-uploader-input'   />
 
                 <div id='home-uploader-footer'>
                   <button className='home-uploader-footer-btn' onClick={()=> setIsOnUploader(false)}>Close</button>
@@ -294,8 +337,10 @@ const setUccElementEditInputs = (key, value) => {
   	            <input type='text' name='password' value={editPassword} onChange={e => setEditPassword(e.target.value)} className='home-uploader-input' placeholder='Password' />
   	            <input type='text' name='kol' value={uccElementEdit.kol} onChange={e => setUccElementEditInputs('kol', e.target.value)} className='home-uploader-input' placeholder='KOL' />
   	            <input type='text' name='ic' value={uccElementEdit.ic} onChange={e => setUccElementEditInputs('ic', e.target.value)} className='home-uploader-input' placeholder='Initial Value (Y/N)' />
-  	            <input type='text' name='notes' value={uccElementEdit.notes} onChange={e => setUccElementEditInputs('notes', e.target.value)} className='home-uploader-input' placeholder='Notes' />
-  	            <input type='text' name='dd' value={uccElementEdit.dd} onChange={e => setUccElementEditInputs('dd', e.target.value)} className='home-uploader-input' placeholder='Date' />
+  	            <input type='text' name='notes' value={uccElementEdit.price} onChange={e => setUccElementEditInputs('price', e.target.value)} className='home-uploader-input' placeholder='price' />
+  
+                <input type='datetime-local' name='dd' value={uccElementEdit.dd}  onChange={e => setUccElementEditInputs('dd', e.target.value)} className='home-uploader-input'  />
+
                 <div id='home-uploader-footer'>
                   <button className='home-uploader-footer-btn' onClick={()=> setIsOnEditing(false)}>Close</button>
                   <button className='home-uploader-footer-btn' disabled={isEditingActivity} style={{ backgroundColor: 'dodgerblue', color: 'white', fontFamily: 'poppins' }} onClick={async () => await handleActivityEditUpload()}>
