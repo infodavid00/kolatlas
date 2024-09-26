@@ -20,7 +20,7 @@ class MONGODB {
   }
 
   target(collection) {
-    return this.client.db("kolatlas").collection(collection);
+    return this.client.db("_kolatlas").collection(collection);
   }
 
   async close() {

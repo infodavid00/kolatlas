@@ -21,6 +21,11 @@ export default function Header() {
         <Link className='header-link'  style={{
       		color: active === '/' ? 'dodgerblue' : 'rgba(10,10,10,1)'
         }} to='/'>KOLs</Link>
+
+        <Link className='header-link' style={{
+        	color: active === '/calls' ? 'dodgerblue' : 'rgba(10,10,10,1)'
+        }} to='/calls'>Calls</Link>
+
         <Link className='header-link' style={{
         	color: active === '/tokens' ? 'dodgerblue' : 'rgba(10,10,10,1)'
         }} to='/tokens'>Tokens</Link>

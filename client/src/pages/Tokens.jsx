@@ -20,7 +20,7 @@ export default function Token() {
     chart: '',
     website: '',
     chain: [],
-    callers: '',
+    callers: {},
     image: null
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -62,9 +62,21 @@ export default function Token() {
     }
   };
 
+  const [userNames, setUsernames] = useState([])
+  
+  const [userNameSelected, setuserNameSelected] = useState(0)
+  useEffect(()=> {
+    const NEWD = userNames[userNameSelected]
+    if (NEWD) {
+       NEWD["date"] = new Date() 
+       setInputs({...inputs, callers: NEWD})	
+    }
+  }, [userNames, userNameSelected])
+
+
 const handleSubmit = async () => {
   const { password, name, x, tg, ca, chart, website, chain, callers, image } = inputs;
-  if (password && name && x && tg && ca && chart && website && chain && callers) {
+    if (password && name && x && tg && ca && chart && website && chain && callers) {
     setIsSubmitting(true);
 
     let imageUrl = '';
@@ -97,6 +109,7 @@ const handleSubmit = async () => {
     try {
       const u = { ...inputs, image: imageUrl, date: new Date() }
       delete u["password"]
+       u.callers['name'] = ''
       const response = await fetch(`${baseEndpoint}/tokens/write`, {
         method: 'POST',
         headers: {
@@ -134,8 +147,20 @@ const handleSubmit = async () => {
                 'X-Srt': 'main'
               }
           });
-         if (response.ok) {
+          const usernameresponse = await fetch(`${baseEndpoint}/records/readUsernames`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-Srt': 'main'
+              }
+          });
+
+         if (response.ok && usernameresponse.ok) {
             const data = await response.json();
+            const usernamesdata = await usernameresponse.json();
+            if (usernamesdata.data && usernamesdata.data.length > 0) {
+              setUsernames(usernamesdata.data);
+            }
             if (data.data && data.data.length > 0) {
               setRecords(data.data);
             }
@@ -180,6 +205,7 @@ const handleSubmit = async () => {
    const [isDeletingRecord, setisDeletingRecord] = useState(false)
     
    const [elementToUpdateID, setElementToUpdateID] = useState('')
+   
    const [elementToUpdate, setElementToUpdate] = useState(
     { 
        password: '',
@@ -190,17 +216,40 @@ const handleSubmit = async () => {
        chart: '',
        website: '',
        chain: [],
-       callers: '',
+       callers: {},
        image: ''
     })
+
+  const [userNameEditSelected, setuserNameEditSelected] = useState(0)
+  const [lockUNES, setlockUNES] = useState(false)
+
+  useEffect(()=> {
+    const callers = (Array.isArray(records) ? records : []).find(e => e._id === elementToUpdateID)?.callers;
+  	if (elementToUpdate && callers) {
+  		const callerIndex = userNames.findIndex((e) => e._id === callers?._id)
+  		setuserNameEditSelected(callerIndex )
+  		setlockUNES(true)
+  	}
+  }, [elementToUpdateID])
+  
+  useEffect(()=> {
+    const NEWD = userNames[userNameEditSelected]
+    if (NEWD) {
+       NEWD["date"] = new Date() 
+       setElementToUpdate({...elementToUpdate, callers: NEWD})
+    }
+  }, [userNames, userNameEditSelected])
+  
    const [isEditingRecord, setisEditingRecord] = useState(false)
-   
+
+      
    useEffect(()=> {
    	 if (Array.isArray(records) && records.length > 0) {
    	   setElementToDelete(records[0]._id)
    	   setElementToUpdateID(records[0]._id)
    	}
    }, [records])
+   
    useEffect(()=> {
    	  if (elementToUpdateID) {
    	      setElementToUpdate(records.find(e => e._id === elementToUpdateID))
@@ -244,7 +293,7 @@ const handleSubmit = async () => {
 
   let imageDupRedun = false
 
-  async function handleRecordEditing(id, data) {
+  async function handleRecordEditing(id) {  
     setisEditingRecord(true)
     try {
       if (typeof elementToUpdate.image !== "string") {
@@ -264,6 +313,7 @@ const handleSubmit = async () => {
       }
       const bodyToUpdate = {...elementToUpdate}
       delete bodyToUpdate["password"]
+      bodyToUpdate.callers.name = ''
       if (imageDupRedun) bodyToUpdate["image"] = imageDupRedun
      
       const makerequest = await fetch(`${baseEndpoint}/tokens/edit?id=${id}`, {
@@ -284,7 +334,7 @@ const handleSubmit = async () => {
       console.error(error);
       setisEditingRecord(false);
       return;
-    }
+    } 
  }
 
  const [deletingPassword, setDeletinPassword] = useState('')
@@ -338,7 +388,13 @@ const handleSubmit = async () => {
         setRecords(sortedRecords);
     }
   }, [sortBy]);
- 
+
+  function getNamesById(id) {
+  	 const i = userNames.find(e => e._id === id)
+  	 return i ? i.name : ''
+  }
+
+
   return (
     <>
       {!Array.isArray(records) ? (
@@ -397,7 +453,7 @@ const handleSubmit = async () => {
 
                     <td className='home-table-data'><a href={currentTableLink === 'x' ? list?.x : currentTableLink === 'website' ? list?.website : list?.tg} target='_blank'>{currentTableLink === 'x' ? list?.x : currentTableLink === 'website' ? list?.website : list?.tg}</a></td>
                                      
-                    <td className='home-table-data'>{list?.callers}</td>
+                    <td className='home-table-data' onClick={()=> window.location.href = '/overview/'+ list?.callers?._id}>{getNamesById(list?.callers?._id)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -443,7 +499,13 @@ const handleSubmit = async () => {
                    <input type='checkbox'checked={inputs.chain.includes('OTHERS')}
                        onChange={() => handleChainsInputChange('OTHERS') } /></div>
             </div>
-            <input type='text' name='callers' className='home-uploader-input' placeholder='Callers' value={inputs.callers} onChange={handleInputChange} />
+            <select className='home-uploader-input' value={userNameSelected} placeholder='Callers' onChange={e => {
+            	setuserNameSelected(e.target.value)
+            }}>
+               {userNames.map((element, index)=> (
+               	  <option key={index} value={index}>{index + 1} - {element.name}</option>
+               ))}
+            </select>
             
             <input type='file' id='file-input' style={{ display: 'none' }} onChange={handleImageChange} />
             <div className='home-uploader-inputupload' onClick={() => document.getElementById('file-input').click()}>
@@ -501,8 +563,15 @@ const handleSubmit = async () => {
                    <input type='checkbox'checked={elementToUpdate.chain.includes('OTHERS')}
                        onChange={() => handleChainsEditInputChange('OTHERS') } /></div>
             </div>
-            <input type='text' name='callers' className='home-uploader-input' placeholder='Callers' value={elementToUpdate.callers} onChange={(e)=> handleEditInputChange('callers', e.target.value)} />
 
+            <select className='home-uploader-input' value={userNameEditSelected} placeholder='Callers' onChange={e => {
+            	setuserNameEditSelected(e.target.value)
+            }}>
+               {userNames.map((element, index)=> (
+               	  <option key={index} value={index}>{index + 1} - {element.name}</option>
+               ))}
+            </select>     
+            
             <input type='file' id='file-input-edit' style={{ display: 'none' }} onChange={handleEditImageChange} />
             <div className='home-uploader-inputupload' onClick={() => document.getElementById('file-input-edit').click()}>
               {elementToUpdate.image ?
@@ -514,7 +583,7 @@ const handleSubmit = async () => {
             <div id='home-uploader-footer'>
               <button className='home-uploader-footer-btn' onClick={() => setIsShowingEdit(false)}>Close</button>
               <button className='home-uploader-footer-btn' onClick={async() => {
-              	 await handleRecordEditing(elementToUpdate._id, elementToUpdate)
+              	 await handleRecordEditing(elementToUpdate._id)
               }} style={{ backgroundColor: 'dodgerblue', color: 'white', fontFamily: 'poppins' }} disabled={isEditingRecord}>
                 {!isEditingRecord ? 'Update' : <TailSpin width={20} height={20} color={'white'} />}
               </button>

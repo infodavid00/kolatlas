@@ -12,7 +12,7 @@ export default function Home() {
     x: '',
     tg: '',
     chains: [],
-    currentCalls: '',
+    currentCalls: [],
     image: null
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -203,7 +203,7 @@ const handleSubmit = async () => {
    const [isDeletingRecord, setisDeletingRecord] = useState(false)
 
    const [elementToUpdateID, setElementToUpdateID] = useState('')
-   const [elementToUpdate, setElementToUpdate] = useState({name: '', chain: '', tg: '', ca: '', x: '', currentCalls: '', image: ''})
+   const [elementToUpdate, setElementToUpdate] = useState({name: '', chains: [], tg: '', x: '', currentCalls: [], image: ''})
    const [isEditingRecord, setisEditingRecord] = useState(false)
    
    useEffect(()=> {
@@ -342,6 +342,35 @@ const handleSubmit = async () => {
     }
   }, [sortBy]);
 
+  const [tokensNames, settokensNames] = useState([])
+  useEffect(()=> {
+     async function fetchRecords() {
+       try {
+          const response = await fetch(`${baseEndpoint}/tokens/readNames`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-Srt': 'main'
+              }
+          });
+         if (response.ok) {
+            const data = await response.json();
+            if (data.data && data.data.length > 0) {
+              settokensNames(data.data)
+            }
+         } else {
+            throw new Error('Fetching records failed');
+         }
+       } catch (error) {
+          console.error(error);
+       } 
+    }
+    fetchRecords()
+  }, [])
+  function getTokenNameById(id) {
+  	 const i = tokensNames.find(e => e._id === id)
+  	 return i ? i.name : ''
+  }
 
 
   return (
@@ -405,11 +434,27 @@ const handleSubmit = async () => {
                     </td>
                     <td className='home-table-data' onClick={()=> window.location.href = '/overview/'+ list._id} style={{ cursor: 'pointer'}}><img className='home-table-data-profile' src={list?.image} /></td>
                     <td className='home-table-data' onClick={()=> window.location.href = '/overview/'+ list._id} style={{ cursor: 'pointer'}}>{list?.name}</td>
-
                     <td className='home-table-data'><a href={currentTableLink === 'x' ? list?.x : list?.tg} target='_blank'>{currentTableLink === 'x' ? list?.x : list?.tg}</a></td>
-                                     
                     <td className='home-table-data'>{(list?.chains ?? []).join(', ')}</td>
-                    <td className='home-table-data'>{list?.currentCalls}</td>
+                    <td className='home-table-data'>
+                        <div style={{
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'flex-start', 
+                            flexWrap: 'wrap', 
+                            gap: '0.5em' 
+                        }}>
+                        {(list?.currentCalls ?? []).map((element, index)=> (
+                         <div key={index}>
+                    	 <a href={'/details/' + element._id}>
+                    	    {getTokenNameById(element._id)}
+                    	 </a>
+                    	 <span>{(index + 1 !== list?.currentCalls?.length) && ','}</span>
+                    	 </div>
+                       ))}
+                       </div>
+                    </td>
+
                   </tr>
                 ))}
               </tbody>
@@ -452,7 +497,7 @@ const handleSubmit = async () => {
                    <input type='checkbox'checked={inputs.chains.includes('OTHERS')}
                        onChange={() => handleChainsInputChange('OTHERS') } /></div>
             </div>
-            <input type='text' name='currentCalls' className='home-uploader-input' placeholder='Current Calls' value={inputs.currentCalls} onChange={handleInputChange} />
+            {/*<input type='text' name='currentCalls' className='home-uploader-input' placeholder='Current Calls' value={inputs.currentCalls} onChange={handleInputChange} />*/}
             <input type='file' id='file-input' style={{ display: 'none' }} onChange={handleImageChange} />
             <div className='home-uploader-inputupload' onClick={() => document.getElementById('file-input').click()}>
               {inputs.image && <img src={URL.createObjectURL(inputs.image)} alt="Preview" style={{ width: '100%', height: 'auto' }} />}
@@ -504,7 +549,7 @@ const handleSubmit = async () => {
                    <input type='checkbox'checked={elementToUpdate.chains.includes('OTHERS')}
                        onChange={() => handleChainsEditInputChange('OTHERS') } /></div>
             </div>
-            <input type='text' name='currentCalls' className='home-uploader-input' placeholder='Current Calls' value={elementToUpdate.currentCalls}  onChange={(e)=> handleEditInputChange('currentCalls', e.target.value)} />
+            {/*<input type='text' name='currentCalls' className='home-uploader-input' placeholder='Current Calls' value={elementToUpdate.currentCalls}  onChange={(e)=> handleEditInputChange('currentCalls', e.target.value)} />*/}
             <input type='file' id='file-input-edit' style={{ display: 'none' }} onChange={handleEditImageChange} />
             <div className='home-uploader-inputupload' onClick={() => document.getElementById('file-input-edit').click()}>
               {elementToUpdate.image ? 

@@ -279,7 +279,7 @@ const setUccElementEditInputs = (key, value) => {
                     <td className='home-table-data'>{formatDateTime(list.dd)}</td>
                     <td className='home-table-data'>{list.kol}</td>
                     <td className='home-table-data'>{list.ic}</td>
-                    <td className='home-table-data'>{list.price}</td>
+                    <td className='home-table-data'>${list.price}</td>
                   </tr>
                ))}
               </tbody>

@@ -373,6 +373,20 @@ body::-webkit-scrollbar-thumb {
 
 
 @media (max-width: 500px) {
+#header img {
+  width: 25px;
+  height: 25px;	
+}
+#header-logo {
+  font-size: 14px;
+}
+.header-link {
+  font-size: 12.5px;
+}
+#header {
+  gap: 0.5em;
+}
+
 #home-upload-cont,#overview-upload-pick-cont {
   width: 90%;
 }

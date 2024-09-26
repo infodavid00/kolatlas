@@ -5,6 +5,7 @@ import Home from './pages/Home.jsx'
 import Overview from './pages/Overview.jsx'
 import Tokens from './pages/Tokens.jsx'
 import Details from './pages/Details.jsx'
+import Calls from './pages/Calls.jsx'
 import Notfound from './pages/Notfound.jsx'
 import './index.css'
 
@@ -18,6 +19,7 @@ function App() {
            <Route exact path='/overview/:id' element={<Overview />} />
            <Route exact path='/tokens' element={<Tokens />} />
            <Route exact path='/details/:id' element={<Details />} />
+           <Route exact path='/calls' element={<Calls />} />
            <Route exact path='*' element={<Notfound />} />
         </Routes>
       </div>

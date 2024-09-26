@@ -33,6 +33,19 @@ export async function read(request, response) {
   }
 }
 
+export async function readUsernames(request, response) {
+  try {
+    const data = await db().target("records").find({}, { projection: {
+    	name: 1,
+    	date: 1
+    } }).sort({ date: -1 }).toArray();
+    response.status(200).json({ ack: true, data });
+  } catch (error) {
+    response.status(500).json({ ack: false, message: error.message });
+  }
+}
+
+
 export async function readOne(request, response) {
   try {
     const data = await db().target("records").findOne({ _id: new ObjectId(request.query.id) });
@@ -71,6 +84,29 @@ export async function writeCalls(request, response) {
 
 export async function deleteRecord(request, response) {
   try {
+   await db().target("tokens").updateMany(
+       { "currentCalls._id": request.query.id },
+       [
+         {
+           $set: {
+             currentCalls: {
+               $map: {
+                 input: "$currentCalls",
+                 as: "call",
+                 in: {
+                   $cond: {
+                     if: { $eq: ["$$call._id", request.query.id] },
+                     then: {},
+                     else: "$$call"
+                   }
+                 }
+               }
+             }
+           }
+         }
+       ]
+     );
+      
     await db().target("records").deleteOne({ _id: new ObjectId(request.query.id) });
     response.status(200).json({ ack: true });
   } catch (error) {
